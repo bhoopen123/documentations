@@ -302,22 +302,129 @@ With this structure, each class knows how to handle its unique behaviors. So no 
 ### Writing Clean Methods 
 
 #### When to Create a Function
+-	Function vs Method 
+    -	Both functions and methods are pieces of code, called by name.
+    -	Core differences: Methods are associated with an object.
+-	Functions organize code into small, targeted pieces of code. Functions are like paragraphs, for code.
+-	4 reasons to create functions, 
+    -	To avoid duplication
+    -	Indentation: is a sign of complexity, and create functions to make the code more simpler to read.
+    -	Unclear Intent
+    -	Method should do one thing and one thing well,  but shouldn’t get very long.
 
 #### Why create a Method – Reason 1: Avoid Duplication
+Key is **Don’t Repeat Yourself**
+-	Code is a liability – we would have to maintain the code. Duplicated code means two places to maintain, fix, and two redundant places to read.
+-	To identify the duplicated code, look for patterns as well, Duplication in our code isn’t always obvious. We should look for the patterns to identify duplicates and use method parameters to implement it in a single method.
 
 #### Why create a Method – Reason 2: Excessive Indentation
+-	Excessive Indentation: Arrow Code
+
+![](/clean-code/imgs/ArrowCode.png)
+
+-	A sign of high cyclomatic complexity (i.e. A measure of the number of paths through the code)
+-	High cyclomatic complexity, Hurts readability, Hinders Testing, and Increase bug risk.
+-	There are three methods to eliminates the toxic arrow code, 
+    -	**Extract Method:** We simply remove related piece of logic to a well-named methods that better convey intent and help us eliminate excessively deep indentation. When refactoring arrow code, it’s often simplest to start with the most deeply nested code and work your way out. 
+
+![](/clean-code/imgs/ExtractMethod.png)
+
+-	**Fail Fast:** Failing fast is really simple to comprehend. When there’s nothing more that you can do in a method, just fail. Now, failing in this case means that you throw an exception as soon as an unexpected situation that can’t be handed occurs.
+
+![](/clean-code/imgs/FailFast.png)
+
+Failing fast is also useful when working with switch statements, Every switch should have a default value so you are aware when the switch falls into an unexpected state.
+
+![](/clean-code/imgs/SwitchStatementExample.png)
+
+-	**Return Early:-** Returning early is another approach for eliminating deep indentation in our code. The big idea with returning early is if you have nothing more to do, return.
+For example, look at below code sample, which is deeply indented.
+
+![](/clean-code/imgs/ReturnEarlyInitial.png)
+
+Can be written as below, there is no Indentation at all, also no need for the temporary `isValid` variable.
+
+![](/clean-code/imgs/ReturnEarlyFinal.png)
+
+> Use a return when it enhances readability. In certain routines, once you know the answer... not returning immediately means that you have to write more code. _Steve McConnell, "Code Complete"_
 
 #### Why create a Method – Reason 3: Convey Intent
+Let’s take an example we discussed earlier, 
+
+```
+// check for a valid extensions, confirm is admin or active
+
+if ((fileExt == ".mp4" || fileExt == ".mpg" || fileExt == ".avi") && (isAdmin == 1 || isActiveFile))
+
+```
+
+We can completely clarify our intent in code by refactoring this conditional as below code, 
+
+```
+
+private bool ValidFileRequest(string fileExtension, bool isActiveFile, bool isAdmin)
+{
+    var validFileExtensions = new List<string>() {"mp4", "mpg", "avi"};
+
+    bool validFileType = validFileExtensions.Contains(fileExtension);
+    bool userIsAllowedToViewFile = isActiveFile || isAdmin;
+
+    return validFileType && userIsAllowedToViewFile;
+}
+
+```
+
+-	We have made clear that ‘mpg’, ‘mp4’ and ‘avi’ are the list of valid file extensions.
+-	It is also clear that ‘isAdmin’ or ‘isActive’ is there to determine if the user should be allowed to view the file at all.
+These layers of abstraction really help fellow programmers speed read through our code so that they can find the line they are looking for. 
+The above method can be further refactored since it is doing two things, validating the requested file extensions and checking if the user has the rights to view the file.
+
 
 #### Why create a Method – Reason 4: Do one thing
 
+To keep the signal-to-noise ratio high, functions should do one thing. 
+-	**Aids the reader: -** A well-chosen function name summarizes the functionality inside. 
+-	**Promotes reuse: -** Because small, focused functions are easier to reuse than larger functions that do many things.
+-	**Eases naming and testing: -** Functions that do one thing are much easier to name, and if a function is hard to name or has a name that’s too broad, that’s a sign that there’s an opportunity to split it up.
+-	**Avoid side-effects: -** The reader should know what the function does by reading the name, If there is other potential surprising things going inside, consider refactoring to a separate function.
+
 #### Mayfly Variables
+-	The Mayfly has one of the shortest lifespans of any creature on earth. Many only live for 30 minutes, and the oldest only live for about 24 hours.
+-	We should strive to give our variables mayfly-style lifetimes. There are two ways to do this, 
+    -	Initialize variables just-in-time, when the variables needed, bring it to life. In the moment that it’s no longer necessary, get it out of scope so that the mental weight lifted.
+    -	If you are creating targeted functions that do one thing, you are going to end up with mayfly variables automatically. 
 
 #### How many Parameters
+-	A high number of parameters makes s function harder to understand. It’s a sign the function is doing too much. 
+-	Strive for 0-2 parameters, this will make code easier to read, understand and test.
+
+![](/clean-code/imgs/InCorrectMethodParameters.png)
+
+These parameters are called Flag Arguments, and it’s a strong sign that the function is doing 2 things. Flag Arguments should be avoided.
 
 #### Sign a method is too Long
+Few signs that the function may be getting too long, 
+-	 Scrolling required: - If it doesn’t fit on the screen, it might be time to split it up. This is arbitrary but most of the functions should fit on the screen.
+-	Naming issues: - A function should be easy to name if it has a single, clear defined task. So you have a hard time naming a function that totally describes what the function does, its likely too long.
+-	Multiple conditions: - When multiple conditionals exits in a function, consider calling a separate function to extract out the conditional. This provides a clear description of the intent given the state of the conditional.
+-	Hard to digest: - Methods that are hard to digest often work with more than one layer of abstraction at a time. A function should work with a single layer of abstraction. This makes it both easier to read and easier to debug.
+-	A function is very hard to digest with seven parameters or more than seven variables in scope at a given time.
+-	Simple function can be longer. Complex functions should be short.
+Yes, this is arbitrary, but use your best judgement. 
 
 #### Handling Exceptions
+Exception Types
+-	Unrecoverable: - Most common, examples, Null reference, File not found, Access denied
+-	Recoverable: - When recoverable exception occur, all isn’t necessary lost. Its worth giving a second try. Examples, Retry Connection Try different file, Wait and try again. It’s important to consider ultimately giving up on retries at some point, so your application isn’t stuck in some infinite loop.
+-	Ignorable: - Logging click, We were willing to accept not collecting some data in order to assure the user wasn’t our click logging system failed. There is nothing wrong with logging and discussion. You should never catch an exception you can’t handle intelligently. The correct behavior for a broken application is to crash immediately. The best way to make sure this happens is to throw an unchecked exception. 
+-	Logging an error alone is not enough, 
+
+![](/clean-code/imgs/TryCatchLogFailSlow.png)
+
+![](/clean-code/imgs/TryCatchBodyStandalone.png)
+
+![](/clean-code/imgs/WritingCleanMethodsSummary.png)
+
 
 ### Writing Clean Classes
 
