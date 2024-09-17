@@ -427,18 +427,80 @@ Exception Types
 
 
 ### Writing Clean Classes
+-	Classes are like Book Headings
+
+![](/clean-code/imgs/ClassesAreLikeBookHeadings.png)
+
+-	A Heading in a book provides a high-level summary of the content inside. When the reader searches a specific concept later, these headings provide a road map. Heading make a book more scannable and help the reader comprehend the paragraphs inside more easily providing a high level summary of the topic being discussed. 
+-	A well written heading should contain several related paragraphs underneath that stick closely to the topic outlined in the heading.
+-	In the same way, a well named and targeted classes provide a strong queue to the high-level intent of what’s inside and thereby aid the reader.
+-	A class should contain multiple methods that relate closely to a single clear responsibility.  
+
 
 #### When to Create a Class (or extract a class from an existing class)
+-	New Concept (Abstract or real-world)
+    -	To model an object, these objects can model either concrete or abstract concepts.
+    -	Classes are especially helpful with abstract concepts because they assign concrete name  and behaviors to these concepts and thereby make them more approachable. 
+-	Low Cohesion (Methods should relate)
+    -	If the methods in your class have little to do with one another, it’s a sign the class has low cohesion. Classes with low cohesion should be split up into separate classes with more targeted responsibilities.
+-	Promote Reuse (Small, targeted => reuse)
+    -	Even if a piece of code could be part of a larger class, put it in its own class if it is useful for another program and thereby easier to work with.
+-	Reduce complexity (Solve once, hide away)
+    -	 The class hides away the complexity and groups related operations behind the scenes, out of sight, out of mind, and allows somebody to just trust that the piece of code will work.
+-	Clarify parameters (Identify a group of data)
+    -	 Classes can greatly simplify information passing when complex data structures are involved. Classes can convert a loose bag of related variables into something more concrete, easier to reason about, and more tangible.
 
-#### Class Cohesion Overview 
+#### Class Cohesion Overview
+-	Cohesion: How strongly the responsibilities of a class are related.
+-	Class responsibilities should be strongly related.
+-	This makes those classes, 
+    -	Easier to read (Enhances readability)
+    -	Increase likelihood of reuse – Highly cohesive classes are more likely to be reused because the logic inside is more likely to be discovered in the first place. 
+    -	Avoids attracting the lazy – Class with low cohesion often have poor names as well, since its difficult to name a class with many disparate responsibilities. These classes are often given overly generic names that attract lazy developers who don’t want to think about where the logic truly belongs. It’s avoid attracting lazy developers, it’s important to keep class names descriptive. This helps keep cohesion high.
+    -	To avoid creating low cohesion classes, keep an eye for a few things here… 
+-	First, watch for methods that don’t interact with the rest of the class. Low cohesion classes feel more like a random set of functionalities.
+-	In a similar way, watch out he fields that are only used by one method. Fields should be used by many methods in the class and if they are not, consider if the field or set of fields is a sign that the related functionality should be extracted to a separate class.
+-	Classes that often change could potentially be a less cohesive class.
+
+![](/clean-code/imgs/LowVsHighCohesion.png)
+
+-	Imagine adding a new feature for financing a vehicle. It clearly belongs to “VehicleFinance” class.
+-	It has also reduced the risk because the change to the “VehicleFinance” class should be highly unlikely to impact any functionality in the “VehicleMaintenance” or “Vehicle” class.
 
 #### Names and Cohesion
+-	Classes with overly general and undescriptive names lead to magnet classes, and as we know magnet attract items. In the same way, classes with poor names, attract lazy developers.
+-	Classes with names like Common and Utility often grow quickly to thousands of lines of unrelated code.
+-	The more concise the name, the smaller the class. So, start with naming well and strive for class cohesion.
 
 #### Signs a Class is too small
+-	Its rare to see the complain that the class is too small.
+-	But its certainly possible to make the mistake that a class is too small, 
+-	Few signs that a class is too small, 
+    -	Inappropriate intimacy : If two classes rely heavily on one another and call a large portion of each other’s methods, then they might be a candidate for joining into a single class.
+    -	Overly small classes make it difficult to understand how the system hangs together. There is just too many small moving parts. This can lead to issues like classes that are tightly bound to one another.
+**Note:** these issues are very rare to see in the real world. Classes that are too big are more common.
+
+![](/clean-code/imgs/PrimitiveObsession.png)
+
+**Benefits:-**
+-	Helps reader conceptualize the code an intent by assigning a well understood name to the group of parameters.
+-	It takes something implicit (in this case a long list of Parameters), and makes it explicit by assigning the group and name that can be reasoned about.
+-	Properties can be encapsulated if another property is added it doesn’t impact the method signature.
+-	Aids maintenance: supports “find by reference”.
 
 #### The Proximity Principle
+Make code read top to bottom when possible. Keep related actions together.
+
+![](/clean-code/imgs/ProximityPrincipleExample.png)
 
 #### The Outline Rule
+-	Collapsed code should read like an outline,
+
+![](/clean-code/imgs/OutlineRuleExample1.png)
+
+![](/clean-code/imgs/OutlineRuleExample2.png)
+
+![](/clean-code/imgs/WritingCleanClassesSummary.png)
 
 ### Writing Clean Comments
 
