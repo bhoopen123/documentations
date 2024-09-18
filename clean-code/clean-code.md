@@ -505,24 +505,98 @@ Make code read top to bottom when possible. Keep related actions together.
 ### Writing Clean Comments
 
 #### Comments: A necessity and a Crunch
+-	Over-reliance on comments is a code smell. 
+-	Use comments after considering the alternatives. Comments should only be chosen as a solution after consideration of alternatives. 
+    -	Comments are sometimes not kept up to date.
+
+So, are comments great or a code smell? 
+-	Prefer expressive code over comments.
+    -	Code is more likely to be kept updated. And it’s the definitive reference of what’s actually happening.
+-	Use Comments when code isn’t sufficient for providing the necessary documentation.
 
 #### Dirty Comment 1: Redundant
+-	Redundant comment is to repeat exactly what code says right next.
+
+![](/clean-code/imgs/RedundantComments.png)
+
+Problem with redundant comments: - 
+-	Redundant comments break the DRY principle. They are needless repetition.
+-	Redundant comments lower the signal to noise ratio. That is just the extra text the reader is typically going to read, but they are not getting any value it as there is no new content here.
+-	Avoid requiring comments for every method. A good name will often suffice.
 
 #### Dirty Comments 2: Intent
 
+![](/clean-code/imgs/IntentExample.png)
+
+There are number of ways to ignore Intent Comments, 
+-	Improve function name.
+-	Declare intermediate variable. 
+-	Declare a constant or Enum
+-	Extract / refactor conditional to function.
+
 #### Dirty Comments 3: Apology
+![](/clean-code/imgs/Apology.png)
+
 
 #### Dirty Comments 4: Zombie Code
+![](/clean-code/imgs/ZombiCodeExample.png)
+
+Common cause of Zombie Code: 
+-	Risk Aversion : Some developers viewed the leading code is inherently risky, they lack the strength of conviction and sense of purpose that’s required to delete unnecessary code so they hoard it in comments where it can live to haunt another day. But code must be deleted regularly because great developers know that code is a liability (Less is more).
+-	Hoarding mentality : Developers may argue that they comment out code just in case it might be useful to someone later. This is hoarding and it does us all a disservice. Code that is no longer useful for production remains in source control history. Remember, with source control, deleted code doesn’t die.
 
 #### Dirty Comments 5: Divider
+![](/clean-code/imgs/DivideExample.png)
+
+-	Avoid using comments to breakup sections. Consider extracting methods instead.
 
 #### Dirty Comments 6: Brace Tracker
+-![](/clean-code/imgs/BraceTracker.png)
+
+Better alternative of Brace Comments, 
+
+-![](/clean-code/imgs/BraceTrackerFix.png)
+
 
 #### Dirty Comments 7: Bloated Header
+![](/clean-code/imgs/BloaterHeaderExample.png)
+
+There are issues with this example, 
+-	Avoid line endings – Keeping those asterisks at the right place is really a hassle.
+-	Don’t repeat yourself – for example, Filename, Author, Created, etc. (can be identified using Source Control).
+-	Follow language’s style conventions, don’t create your own ad-hoc style.
 
 #### Dirty Comments 8: Defect Log
+![](/clean-code/imgs/DefectLogExample.png)
+
+-	Change metadata belongs in source control and not in code.
 
 #### Clean Comments
+![](/clean-code/imgs/CleanComments.png)
+
+-	ToDo Comments
+
+![](/clean-code/imgs/ToDoComments.png)
+
+Visual Studio even provides a dedicated Task List window where you can see any comments that begin with TODO, HACK or UNDONE.
+-	Summary Comments
+
+![](/clean-code/imgs/SummaryCommentsExample.png)
+
+Describe intent at general level higher than the code. 
+Often useful to provide high level overview of classes.
+Risk: Don’t use to simple augment poor naming. Small well named functions are often so self-documenting that a Summary comment would simply be redundant.
+
+-	Documentation Comments
+
+![](/clean-code/imgs/DocumentationCommentsExample.png)
+
+
+**Summary**
+
+![](/clean-code/imgs/WritingCleanCommentsSummary1.png)
+
+![](/clean-code/imgs/WritingCleanCommentsSummary2.png)
 
 ### Staying Clean
 
