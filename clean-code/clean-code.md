@@ -601,7 +601,24 @@ Risk: Don’t use to simple augment poor naming. Small well named functions are 
 ### Staying Clean
 
 #### When to Refactor to Clean Code 
+3 Rules,
+-	If you are refactoring existing code, it should be code that you are currently working with. Refactoring for future readers is of questionable value since you are inventing time now for readers that may or may not materialized in the future.
+-	Refactoring is useful when YOU find the code difficult to comprehend or change. Generally the size of your refactoring should be inline with the size of the code change that you are making.
+-	Before making any changes be sure you have sufficient test coverage to assure that your changes don’t introduce regressions in the code.
 
 #### Code Reviews
+-	Promotes proactive cleanliness
+-	Set guidelines
+-	Assure readability 
 
 #### Accept No Broken Windows
+-   How many time you have worked on a poorly written and maintained code base where developers have given up taking pride in their work? This depressing situation doesn’t happen overnight, it’s the byproduct of many small hacks and compromises that were accepted and overlooked over the years. 
+-	A building with a few broken windows is quickly disrespected. And its much more likely for others to treat it in the same manner. This toxic mindset affects software projects as well. To maintain clean code bases and avoid costly ground-up rewrites, we need to maintain pride in our code bases and not allow the mistakes of our past to open the door for accepting evermore technical debt. 
+
+**The Boy Scout Rule**
+
+> "Leave the code you are editing a litte better than you found it."  Robert C. Martin
+
+**Summary**
+
+![](/clean-code/imgs/StayingCleanSummary.png)
