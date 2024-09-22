@@ -69,3 +69,89 @@ With .NET 6, one .NET vision has come to reality.
     -	Syncs the NameSpaces of each class based on the folder and project names
 -	XAML live Preview
 
+### What’s new in C# 10 
+
+#### Global `using` statements
+-	If a `namespace` is imported globally, its types are available everywhere in the project. You can declare a `using` statement to be global in every class or wherever you want. But the recommendation is placing these global using statements in a separate file, let’s say, `GlobalUsing.cs`.
+
+#### File-scoped namespaces
+-	Also named as File-based namespaces,  
+
+![](/dotnet6-basics/imgs/FileScopedNamespaces.png)
+
+-	Now we can see the snippet on the right “file-scoped namespaces”,  the semicolon at the end, now, that’s where the name comes from, all code in this file automatically becomes part of this namespace.
+
+#### Extended property patterns
+???
+
+#### Structure type changes
+???
+
+#### Const interpolated strings
+-	We can create Constant strings using interpolation, which before C# 10 was not possible.
+ 
+```
+const string folderPath = "/docs";
+const string logFilePath = $"{folderPath}/log.txt";
+```
+
+-	The only constrain is that the placeholder variable should also be a constant.
+
+#### “DateOnly” and “TimeOnly”
+-	`DateOnly` – a struct that contains a Date without time
+-	`TimeOnly` - a struct that contains a Time without date
+
+#### Process Path and Process Id
+-	ProcessPath  - returns the location of the executing assembly, so the path to the “.exe”.
+    -	`Environment.ProcessPath`
+-	ProcessId – returns the Id of the process.
+    -	`Environment.ProcessId`
+
+#### Chunk method in the LINQ API
+-	For example,  `IEnumerable<type> values = values.Chunk(3)`
+
+#### ThrowIfNull
+```
+void SomeVeryIntrestingMethod(object obj)
+{
+    ArgumentNullException.ThrowIfNull(obj);
+}
+```
+ 
+Other differences
+-	https://github.com/dotnet/core/tree/main/release-notes/6.0/preview/api-diff
+ 
+
+### ASP.NET Core Platform
+
+![](/dotnet6-basics/imgs/TheASP.NETCorePlatform.png)
+
+-	With ASP.NET Core 6, the `Program.cs` and `Startup.cs` files are now unified into a single file (i.e. `Program.cs`) that replaces the functionality of both separate files that we had before.
+
+#### Introducing Minimal APIs
+-	To create small APIs with lot less ceremony than creating regular APIs with ASP.NET Core.
+-	Part of .NET 6
+-	Just few lines of Code
+-	Example is shown below,
+ 
+ ![](/dotnet6-basics/imgs/MinimalAPIsExample.png)
+
+-	If we create an Empty API project in .NET 6, it creates one API which returns “Hello World”.
+-	We can check this by implementing Swagger in our Empty Project.
+
+#### Maui
+-	`Xamarin.Forms` to `Maui`
+-	Using Xamarin it was possible to create mobile apps for `iOS` and `Android`
+
+Different versions of Xamarin
+-	Xamarin.Forms: abstraction on top of “iOS”, “Android” and “Windows”.
+-	Xamarin.Android and Xamarin.iOS 
+
+With .NET 6, Xamarin.Forms, is getting successor named Maui. 
+-	Maui -> Multi-platform App UI. Using .NET Maui and .NET 6, we can build native apps, both for mobile devices as well as Desktop.
+    -	Maui can be used to build apps for Windows, iOS, Android and macOS.
+    -	Cross platforms
+    -	C# and XAML
+  
+![](/dotnet6-basics/imgs/.NetMauiArchitecture.png)
+
