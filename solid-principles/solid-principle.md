@@ -100,3 +100,43 @@ Bug fixes are ok
 ![](/solid-principles/imgs/InheritanceBasedExtension.png)
 
 ![](/solid-principles/imgs/CompositionInjectionExtension.png)
+
+#### Prefer implementing new features in new classes
+- Why use new class?
+  -  Design class to suit problem at hand
+  - Nothing in system depends on it
+  - Can add behaviour without touching existing code
+  - Can follow Single Responsibility Principle
+  - Can be unit-tested
+
+Note: Below example is not related to OCP
+
+Replace Switch with Reflection
+![](/solid-principles/imgs/SwitchCase.png)
+
+![](/solid-principles/imgs/SwitchCaseAlternative.png)
+
+#### Example of OCP
+- Packages and Libraries
+  - Closed for modification
+    - Consumers cannot change package contents
+    - Should not break consumers when new behavior is added
+  - Open to extension
+    - Consumers should be able to extend the package to suit their needs
+
+#### More resources on OCP
+- Why you need to know OCP but don't 
+  - https://bit.ly/2LSXOuo (https://hackernoon.com/why-the-open-closed-principle-is-the-one-you-need-to-know-but-dont-176f7e4416d)
+- Open Closed Principle by Robert Martin
+  - https://bit.ly/2Gmxg1Z (https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.h)
+- Open Closed Principle by Jon Skeet
+  - https://bit.ly/2AMmprC (https://codeblog.jonskeet.uk/2013/03/15/the-open-closed-principle-in-review/)
+
+#### Key Takeaways
+- Solve the problem first using simple, concrete code
+- Identity the kinds of changes the application is likely to continue needing
+- Modify code to be extensible along the axis of change you have identified
+  - Without the need to modify its source each time
+
+
+
