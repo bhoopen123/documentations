@@ -202,3 +202,136 @@ Assert.Equal(20, AreaCalculator.CalculateArea(myRect));
 
 // Actual Result: 25
 ```
+
+- **What Happened ?**
+- Square has an invariant
+  - Its sides must be equal
+
+- Rectangle has an invariant
+  - Its sides are independent 
+
+This design breaks rectangle's invariant and this violates LSP
+
+- Eliminate the 'Square' class completely and have a flag 'IsSquare'.
+
+- **One Solution**
+
+```
+public class Rectangle
+{
+  public int Height { get; set; }
+  public int Width { get; set; }
+
+  public bool IsSquare => Height == Width;
+}
+```
+
+- **Another Solution**
+
+```
+public class Rectangle
+{
+  public int Height { get: set: }
+  public int Width { get; set; }
+}
+
+public class Square
+{
+  public int Side { get; set; } 
+}
+```
+
+#### Detecting LSP Violations in your Code
+
+- Type checking with `is` or `as` in polymorphic code
+- null checks
+- NotImplementationException
+
+#### Type checking
+
+```
+foreach (var employee in employees)
+{
+  if (employee is Manager)
+  {
+    Helper.PrintManager(employee as Manager);
+    break;
+  }
+
+  Helpers.PrintEmployee(employee);
+}
+```
+
+- Type Checking (Corrected)
+
+```
+foreach(var employee in employees)
+{
+  employee.Print();
+}
+
+// OR
+
+foreach(var employee in employees)
+{
+  Helpers.PrintEmployee(employee);
+}
+
+```
+- But be careful NOT to violate SRP in `Employee` or `Helper` class.
+
+#### Null Checking
+
+```
+foreach(var employee in employees)
+{
+  if(employee == null)
+  {
+    Console.Writeline("Employee not found.");
+  }
+  Helpers.PrintEmployee(employee);
+}
+```
+
+#### Not Implemented Exception
+```
+public interface INotificationService
+{
+  void SendText(string SmsNumber, string mesage);
+
+  void SendEmail(string to, string from, string subject, string body);
+}
+
+public class SmtpNotificationService : INOtificationService
+{
+  public void SendEmail(string to, string from, string subject, string body)
+  {
+    // actually send email here
+  }
+
+  public void SendText(string SmsNumber, string message)
+  {
+    throw new NotImplementationException();
+  }
+}
+```
+
+![](/solid-principles/imgs/LspIsASubsetOfPolymorphism.png)
+
+#### Fixing LSP Violations
+- Follow the "Tell, Don't Ask" principle
+- Minimize null checks with
+  -  C# Features
+  -  Gaurd clauses
+  -  Null Object design pattern
+- Follow ISP and be sure to fully implement interfaces
+
+![](/solid-principles/imgs/TellDontAsk.png)
+
+#### Key Takeaways
+- Subtypes must be substitutable for their base types
+- Ensure base types invarient are enforced
+- Look for 
+  - Type checking 
+  - Null checking 
+  - NotImplementedException
