@@ -138,5 +138,67 @@ Replace Switch with Reflection
 - Modify code to be extensible along the axis of change you have identified
   - Without the need to modify its source each time
 
+### LSP - Liskov Substitution Principle
 
+Let f(x) be a property provable about objects x of type T. Then f(y) should be trur for objects y of tye S where S is a subtype of T.
 
+#### Liskov Substitution Principle
+Subtypes must be **substitutable** for their base types.
+
+#### Basic Object-Orient Design
+- Something IS-A something else
+  - An eagle IS-A bird
+- Something HAS-A property
+  - An address HAS-A city
+
+- **LSP states that the IS-A relationship is insufficient and should be replaces with IS-SUBSTITUTABLE-FOR.**
+
+#### Classic Rectagle-square Problem
+- A rectangle has four sides and four right angles
+- A square has four equal sides and four right angles
+
+Per geomarty, **a square is a rectangle.**
+
+```
+public class Rectangle
+{
+  public virtual int Height {get; set;}
+  public virtual int Width {get; set;}
+}
+
+public class AreaCalculator
+{
+  public static int CalculateArea(Rectangle r)
+  {
+    return r.Height * r.Width;
+  }
+}
+
+// Square (a Subtype of Rectangle)
+public class Square : Rectangle
+{
+  private int _height;
+  public override int Height
+  {
+    get {return _height;}
+    set
+    {
+      _width = value;
+      _height = value;
+    }
+  }
+}
+
+// width implemented similarly
+```
+**The Problem**
+
+```
+Rectangle myRect = new Square();
+myRect.Width = 4:
+myRect.Height = 5;
+
+Assert.Equal(20, AreaCalculator.CalculateArea(myRect));
+
+// Actual Result: 25
+```
