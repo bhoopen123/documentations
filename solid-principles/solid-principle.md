@@ -335,3 +335,66 @@ public class SmtpNotificationService : INOtificationService
   - Type checking 
   - Null checking 
   - NotImplementedException
+
+### ISP - Interface Segregation Principle
+Clients should not be forced to depend on methods they do not use.
+- Prefer small, cohesive interfaces to large, "fat" onces.
+
+#### What does interface mean in ISP ?
+
+- C# `interface` type/keyword
+- Public (or accessible) interface of a class
+
+A type's interface in this context is whatever can be accessed by client code working with an instance of that type.
+
+#### What's a Client?
+In this context, the client is the code that is intreacting with an instance of the interface. It's the calling code.
+
+- Violating ISP results in classes that depend on things they don't need.
+
+#### Detecting ISP violations in your code
+- Large interfaces
+- NotImplementedException
+- Code uses just a small subset of a larger interface
+
+- A poorly-designed Interface
+
+```
+public interface INotificationService
+{
+  void SendText(string SmsNumber, string mesage);
+
+  void SendEmail(string to, string from, string subject, string body);
+}
+```
+
+- Interfce Lacks Cohesion 
+
+```
+public class SmtpNotificationService : INOtificationService
+{
+  public void SendEmail(string to, string from, string subject, string body)
+  {
+    // actually send email here
+  }
+
+  public void SendText(string SmsNumber, string message)
+  {
+    throw new NotImplementationException();
+  }
+}
+```
+
+- Split it up
+
+```
+public interface IEmailNotificationService
+{
+  void SendEmail(string to, string from, string subject, string body);
+}
+
+public interface ITextNotificationService
+{
+  void SendText(string SmsNumber, string message):
+}
+```
