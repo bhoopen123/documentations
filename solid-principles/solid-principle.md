@@ -398,3 +398,28 @@ public interface ITextNotificationService
   void SendText(string SmsNumber, string message):
 }
 ```
+
+#### Fixing ISP Violations
+- Break up large interfaces into smaller onces
+  - Compose fat interfaces from smaller onces for backward compatibility
+- To address large interfaces you don't control
+  - Create a small, cohesive interface
+  - Use the Adapter design pattern so your code can work with the Adapter
+- Clients should own and define their interfaces
+
+#### Where do Interfaces live in our Apps?
+- Client code should define and own the interfaces it uses
+- Interfaces should be declared where both client code and implementations can access it
+
+#### Learn More
+- Micrisoft Reference Application + eBook
+  - [github.com/dotnet-architecture/eShopOnWeb](https://github.com/dotnet-architecture/eShopOnWeb)
+- Clean Architecture Solution Template
+  - [github.com/ardalis/CleanArchitecture](https://github.com/ardalis/CleanArchitecture)
+
+#### Key Takeaways
+- Prefer small, cohesive interfaces to large, expansive onces
+- Following ISP helps with SRP and LSP
+- Break up large interfaces by using 
+  - Interface inheritance
+  - The Adapter design pattern
