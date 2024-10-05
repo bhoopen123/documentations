@@ -423,3 +423,31 @@ public interface ITextNotificationService
 - Break up large interfaces by using 
   - Interface inheritance
   - The Adapter design pattern
+
+### DIP - Dependency Inversion Principle
+High-level modules should not depend on low-level modules. Both should depend on abstractions.
+
+Abstractions should not depend on details.
+
+Details should depend on abstractions.
+
+#### What's the difference between "high-level" and "low-level"?
+
+**High Level**
+- More abstract 
+- Business rules
+- Process-oriented
+- Further from input/output (I/O)
+
+**Low Level**
+- Closer to I/O
+- "Plumbing" code
+- Intercts with specific external systems and hardware
+
+#### What's an abstraction?
+(In c#, in this context) 
+
+**Abstractions in C#**
+- Interfaces 
+- Abstract base classes
+- Types you can't instantiate
