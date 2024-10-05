@@ -451,3 +451,86 @@ Details should depend on abstractions.
 - Interfaces 
 - Abstract base classes
 - Types you can't instantiate
+
+#### What about details?
+- Abstractions should not depend on details. Details should depend on abstractions.
+
+#### Details and Abstractions
+- Abstractions shouldn't be coupled to details
+- Abstractions describe what
+  - Send a message
+  - Store a customer record
+- Details specifiy how
+  - Send an SMTP email over port 25
+  - Serialize Customer to JSON and store in a text file
+
+**Depending on Details**
+```
+public interface IOrderDataAccess
+{
+  SqlDataReader ListOrders(SqlParameterCollection params);
+}
+```
+
+The better way of doing this is below, 
+
+**Abstractions Should Not Depend on Details**
+
+```
+public interface IOrderDataAccess
+{
+  List<Order> ListOrder(Dictionary<string, string> params);
+}
+```
+
+#### Low Level Dependencies
+- Database
+- File system
+- Email
+- Web APIs
+- Configuration
+- Clock
+
+#### Hidden Direct Dependencies
+- Direct use of low level dependencies
+- Static calls and new
+- Cause pain
+  - Tight coupling
+  - Difficult to isolate and unit test
+  - Duplication
+
+#### New is glue
+- Using new to create dependencies glues your code to that dependencies,
+  - [ardalis.com/new-is-glue](https://ardalis.com/new-is-glue/)
+- New is not bad - just near in mind the coupling it creates
+  - Do you need to specifiy the implementation?
+  - Could you use an abstraction instead?
+
+#### Dependencies without Abstractions 
+
+![](/solid-principles/imgs/DependenciesWithoutAbstractions.png)
+
+#### Dependencies with Abstractions
+
+![](/solid-principles/imgs/DependenciesWithAbstractions.png)
+
+#### Dependency Injection
+- Don't create your own dependencies
+  - Depend on abstractions
+  - Request dependencies from client
+- Client inject dependencies as 
+  - Constructor arguments 
+  - Properties 
+  - Method arguments
+  Also see : Strategy Design Pattern
+
+#### Tip: Prefer Constructor Injection
+- Follows explicit dependencies principle
+- Clsses are never in uninitialized state
+- Can leverage an IOC container to construct types and their dependencies
+
+IOC, or "Inversion of Control" containers are sometimes called "dependency injection" (DI) containers or simply services containers.
+
+
+
+
