@@ -26,4 +26,41 @@ So, there is nothing wrong using developing Monolith applications
 - Difficult to deploy
     - Risky
     - Requires downtime
-    
+- Difficult to scale
+    - horizontal scaling often not possible
+    - vertical scaling is expensive
+    - whole application must be scale
+
+#### Distributed Monolith
+
+![](/microservices/imgs/DistributedMonoliths.png)
+
+- All services are tightly coupled together in such a way that everything must be deployed together.
+- New features requires changes to multiple services and database.
+- Such type of systems are referred as Distributed Monoliths.
+
+### Benefits of Microservices
+
+#### Small Services
+- Can be owned by a team 
+- Easier to understand
+- Can be rewritten
+
+#### Technology Choice
+- Adopt new technology without need to upgrade everything in one go.
+- Use the right tool, for example one Microservice uses relational database to store its data while another uses document database.
+- Ofcourse, we need to standardize where it make sense, but individual them can decide which tool suite is more appropriate to use.
+
+#### Individual Deployment
+- Loose coupling means that we can deploy tem individually
+- Which leads to much lower risk than upgrading everything in the entire system in one go
+- Also helps us to achive minimizing downtime
+- Frequent upgrades are possible
+
+#### scaling
+- Scale each Microservice individually, which is cost effective than scaling an entire Monoliths.
+
+#### Agility
+- Adapt rapidly changing business requirements
+- Easier reuse
+
