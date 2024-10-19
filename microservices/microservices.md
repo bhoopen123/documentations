@@ -64,3 +64,38 @@ So, there is nothing wrong using developing Monolith applications
 - Adapt rapidly changing business requirements
 - Easier reuse
 
+### Challenges of Microservices
+
+#### Developer Productivity
+- How can you ensure developer's productivity?
+- Do they have to download the entire code and configure each microservice to talk to each other?
+- That could be very error prone and time consuming
+
+#### Complex Interections
+- Dividing an application in several Microservices will increase the complexity of the system
+- Also becouse of chatty communication between microservices the entire application could be inefficient.
+
+#### Deployment
+- You will need to automate the deployment process
+- Deployment of individual Microservice could be time consuming
+
+#### Monitoring
+- We need a certralized place to check logs and moniter for problems, if each Microservice has its own logs then checking logs for individual micriservices could be tedious.
+
+#### Microservices give you choice
+- Microservices donot dictate technology choice, database choices, synchronously vs asynchronously communication, what authentication mechanism you are going to use.
+- Use your favorite programming language and tools.
+
+#### Evolving towards Microservices
+It is perfectly possible to evolve towards a Microservices architecture.
+- Augment a Monolith with Microservices where everytime you add a new capability, you add a new Microservice.
+- Decompose a Monolith into Microservices, where you identifies existing capabilities that should be extracted out into their own independent Microservices.
+
+You don't need to start with Microservices, it might be better to allow a system to grow a bit until it becomes apparent what an appropriate segregation of responsibilities into Microservices would be.
+
+- Defining Microservice responsibilities, how the public interface look like?
+
+### Microservices own their own data
+- Microservices are autonomous and independently deployable to achive this, Microservices has to own its own data.
+- Avoid sharing data in Microservices
+ 
