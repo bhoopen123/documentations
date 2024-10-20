@@ -99,3 +99,59 @@ You don't need to start with Microservices, it might be better to allow a system
 - Microservices are autonomous and independently deployable to achive this, Microservices has to own its own data.
 - Avoid sharing data in Microservices
  
+#### Microservice Data Ownership Limitations
+- Database Joins
+    
+    By Splitting our data out, it means that we can no longer performs database joins across the data that's owned by two different microservices. Instead we have to make separate calls to each database.
+    And we can no longer update two tables owned by two Microservices within a single database transaction.
+
+- Transactions
+
+    We have to use distributed transactions, which are very complex to implement, or more commonly design our system to work in what's called Eventually Consistency manner.
+
+- Eventually Consistency
+
+    Where we may have to wait a while for the overall state of the data to be fully consistent, when a single business operation requires updates to more than one data store, there is going to be a short window of time when the change has been made in one database but not the others.
+
+#### Mitigating Data Ownership Limitations
+- Define service boundries well
+
+    Minimize the need to aggregate data from multiple microservices to perform a single operation.
+
+- Caching
+
+    One Microservice might hold its own cache of a subset of the data thatis owned by another Microservice. This also improves performance of the application and improves availability.
+
+- Identify "seams" in the database schema
+
+    This will help you avoid the performance penalties of having to involve multiple Microservices in a single business operation.
+
+![](/microservices/imgs/SeamsInDatabaseSchema.drawio.png)
+
+- Is Putting `Product Name` and `Unit Price` in OrderItem is not duplicating the data. Only putting `ProductId` should be fine? Well no, putting `ProductName` and `Price` are even correct to keep in OrderItem table. As it let us know the price of the item at the time of placing the order.
+
+These data have different meaning within the context of each Microservices.
+
+- Microservice can consist of more than one process Microservice Components
+
+![](/microservices/imgs/MicroserviceProcesses.drawio.png)
+
+There may be several different hosts and processes involved in a Microservice. But conceptually together they form a single Microservice and only those components are allowed to shared data.
+
+#### Microservice should have clearly defined Public interface
+
+#### Microservices can be upgraded without their clients needing to upgrade
+This means that you must never make a breaking change to the public interface of a Microservice. Its a good idea to call a public interface a contract.
+
+### Microservice Contract
+
+#### Make additive changes
+- Add new endpoints
+- New properties on DTOs (Data Transfer Objects)
+
+    As most of the serializers can be configured to simply ignore additional fields that they aren't expecting.
+
+- Introducing version 2 API
+    - Version 1 clients must still be supported
+
+ 
