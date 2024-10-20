@@ -154,4 +154,52 @@ This means that you must never make a breaking change to the public interface of
 - Introducing version 2 API
     - Version 1 clients must still be supported
 
- 
+### Identifying Microservice Boundries
+- What is the best way to break a system into Microservices?
+- Getting it wrong can be costly.
+    - Result in poor system performance
+    - Difficult to change if service is running in production
+
+So, it is worth dedicating some time considering, what our options are in this area.
+
+In some way it could be easier if your system is existing Monolithic application. There might already have been modularization and some of these modules might be right candidate for converting into Microservices, especially if they are loosly coupled from the rest of the system through a clear interface.
+
+#### Start from an existing system
+- Identify loosely coupled components
+- Identify database seams
+
+    Organize Microservices around business capabilities.
+
+#### Domain Driven Design
+- Identify "Boundred Context" within our applications.
+- Breaking up the domain model for large system
+- each bounding context having its own ubiquitous language
+- Microservices donot share models and even might use different terminology for the same thing, example, `OrderItem` and `CatalogItem`.
+
+#### Sketch your ideas on a whiteboard
+- Run them through real-world use cases
+- Identify potential problems
+
+### Microservice Boundry Pitfalls
+- Don't turn every noun into a Microservice
+    this lead to anemic CRUD Microservices, which is just a then wrappers around databases with methods add and updates entities, where the Logic related to those entities remains distributed across the rest of the system.
+- Avoid circular dependencies between your Microservices.
+- Avoid chatty communications between Microservices.
+
+- eShopOnContainers Service Boundries
+
+![](/microservices/imgs/eShopOnContainersServiceBoundries.drawio.png)
+
+#### Microservice Hosting Environments
+- Development
+
+    Developers want to debug the aplication locally
+
+- Staging
+
+    Testers want to try out the application in a production like environment
+
+- Production
+    
+    We also need to host the application for end users
+
