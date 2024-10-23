@@ -227,3 +227,36 @@ That container could also be run on the cloud, but it could also be your local d
     - Avoid tight coupling between services
 - Setup continuous integration build
     - Run automated tests
+
+### Types of Tests 
+
+#### Unit Tests
+These operates at the code level and they are typically very **fast to run**. If you are following a TDD process, then you will already be creating these and you typically want lots of Unit Tests and for them to have very good **Code coverage**.
+
+#### Service- level Tests
+Also called **Integration Tests**, we want to be also to test on individual microservices in **isolation** from all the others.
+
+#### End-to-End Tests
+These are where you test all of your microservices running to gether in a production like environment. You automate some key journeys through your application from the User Interface that excercise as many parts of the system working together as possible.
+
+### Consider using a Microservice template Or "Exemplar"
+It demostrate a pattern that other microservices should follow, it is a great idea to be have some kind of standard template that could be used as the starting point for every new Microservice you create, Or it could be that you nominate a particular microservice as an **exemplar**.
+
+### Standardizing Microservices
+
+It is a good idea to standardizing across all your Microservices, for examples, 
+
+#### Logging
+All of the microservices should be emitting logs in the same format and sending those logs to a centralized location. 
+
+#### Health checks
+Its a great idea for every Microservice to have a way of reporting its own health, like it is up and running, can it talk to its downstream dependencies such as databases or other Microservices. 
+
+#### Configuration
+All your Microservices should take same approach to accessing sequence and configuration. 
+
+#### Authentication 
+You might have some standard middleware that sets up the necesssary authentication pipeline for your technology of choice, such as ASP.NET, or Node.js. With that you will reduce the risk of developers accidentally misconfiguring authetication and leaving a microservice unsecured.
+
+#### Build Script
+It is a good idea for developers to build a 'Build Script' to build the code, for example, if you choose to use containers, so each Microservice needs a docker file that produces the container image.
