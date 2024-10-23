@@ -203,3 +203,27 @@ In some way it could be easier if your system is existing Monolithic application
     
     We also need to host the application for end users
 
+### Microservices Hosting Options
+
+#### Virtual Machines
+- One VM per microservice, but that can get very expensive
+- So, several Microservices onto a single VM, but that can get a bit messy, as each microservice might have different requirements for frameworks or dependencies that need to be installed. 
+- There are several other operational challenges with using virtual machines, such as how each microservice can know where to find the others. 
+
+#### Plateform as a services
+- Automatic scale-out
+- DNS address entries for each microservice
+- Load balancing built-in 
+- Security
+- Monitoring
+- Serverless plateforms also fall into this category
+
+#### Containers
+Containers let you package-up an application along with all its dependencies in such a way that its easily portable to run on any container host.
+That container could also be run on the cloud, but it could also be your local development laptop.
+
+### Creating a new Microservice
+- Source control repository per microservice
+    - Avoid tight coupling between services
+- Setup continuous integration build
+    - Run automated tests
