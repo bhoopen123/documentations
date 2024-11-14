@@ -260,3 +260,30 @@ You might have some standard middleware that sets up the necesssary authenticati
 
 #### Build Script
 It is a good idea for developers to build a 'Build Script' to build the code, for example, if you choose to use containers, so each Microservice needs a docker file that produces the container image.
+
+### Benefits of Service Templates
+- Reduce time to create a new microservices
+- **Consistent tooling:** Ensures consistency in your product (but still allow for best tool for the job), don't be so rigid. The end goal of this is to provide a friction free development environment.
+- **Increase developer productivity:** Developer's time should be focusing on implementing the business requirements of the microservice rather all the plumbing and infrastructure sorrounding microservices.
+- Ability to run the microservice in isolation.
+
+### Microservice communication Patterns
+If we have few microservices, is it okay to call each other whenever its necesssary? and if I have a frontend application like a website or mobile application, should that also be allowed to call directly to any of the microservices it wants to?
+
+![](/microservices/imgs/Microservices-CommunicationPatterns.png)
+
+There will be few difficulties if we allow complete free-for-all situation like in the previous diagram for example, 
+- Tangled dependencies between services
+- Cascading failure may occur where one microservice failing causes the others to fail as well.
+- Poor performanance, if making a call to one microservice ends up requiring multiple hops to call additional microservices.
+- If such things are happenings in your aplication that means you have got some service boundries in the wrong place.
+
+The better approach is to minimize calls between microservices,
+
+![](/microservices/imgs/Microservices-CommunicationPatterns2.png)
+
+- Microservices could share/publish the messages to a shared event bus and also subscribe to messages on the Bus. This promotes asynchronous communication between microservice.
+- Frontend (mobile and/or single page application) calls go through the API gateway and are routed through to the correct microservice. API Gateway can have authentication implemented.
+- A close related pattern called Backend for Frontend builds on this idea, you can create an API Gateway for each of the frontend application.
+
+
