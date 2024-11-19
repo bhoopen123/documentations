@@ -286,4 +286,35 @@ The better approach is to minimize calls between microservices,
 - Frontend (mobile and/or single page application) calls go through the API gateway and are routed through to the correct microservice. API Gateway can have authentication implemented.
 - A close related pattern called Backend for Frontend builds on this idea, you can create an API Gateway for each of the frontend application.
 
+#### Synchronous Communication
+- Making a direct call to a microservice and waiting for it to respond.
+- It is important that this operation is optimized to complete as quickly as possible.
+- HTTP is most popular mechanism, because it is an Industry standard, available in all main stream programming language.
+Any web page or mobile application can easily call our Microservices.
+- The payload of microservice request and response is typically going to be in JSON or XML.
+
+#### RESTful APIs
+Another pattern very often associated with microservice architectures is to implement your API as a set of RESTful resources.
+- Represent information as "resources", e.g. CatalogItem, Order
+- Each of the resources should be manipulated using HTTP methods, e.g. GET (to retrive), POST (to create), PUT (to update), DELETE (to delete)
+- Use HTTP status codes, e.g. 404 (NOT FOUND), 200 (OK), 201 (CREATED)
+- Media type headers (content type) to specify how our resources should be represented
+
+#### Asynchronous Communication
+Sometimes, we might want to ask a microservice to do something that we don't need to wait for e.g. process of submitting an order
+
+![](/microservices/imgs/AsynchronousCommunication.drawio.png)
+
+We can achieve this by making asynchronous communication patterns.
+
+#### Asynchronous Communication over HTTP 
+It is possible to implement asynchronous communication patterns over HTTP, for example, 
+![](/microservices/imgs/AsynchronousCommunicationOverHttp.drawio.png)
+
+Where the microservice itself reports back when its completed when its completed the task. When a client calls your microservice, they can register a callback URL on which they would like to receive any notifications. But anothervery common pattern for asynchronous comminications is for microservices to publish messages to an Eventbus. Rather than directly calling the other microservices, they simply create a message and send it to a message broker which services as an intermediatory, Other microservices than subscribe to those messages.
+
+**Advantages:** 
+- It completely decouples the microservices from each other, So instead of one service directly calling the next service, it simply talks to the message broker.
+- If second service is temporarily unavailable, then the first service is still able to function and the second service will process the queued-up messages once its online again.
+- This approach is also very beneficial for supporting more advanced scaling patterns. Many serverless hosting platforms do this automatically for you, but with containerized solutions, its also possible to achievethe same for the cluster of virtual machines that your containers are running on.
 
