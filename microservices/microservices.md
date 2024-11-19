@@ -327,3 +327,19 @@ We could post a command message that specified the details of the email that sho
 #### Events
 An event message is simply a way of announcing that something has happened and are not directed to any microservice in particular when you publish events you are allowing any other microservices in your system that are interested to subscribe to that event and perform their own custom actions when it occurs, for example,  if there was an "Order Placed" event then several actions might need to occur as a result of that event, like charging your credit card, sending a confirmation email, checking on stock levels. So each microservices that needs to perform an action when an orer is placed will be triggered by that single event being posted to the event bus.
 
+### Resilient Comminication Patterns
+We may expect from time to time that communication from servie will fail due to transient issues. We need to handle these failures well as they result in cascading failures that are very difficult to recover from.
+Its a great idea to build in retries with back-off, this means if your first attempt fails, then you just wait a few seconds and try again, and if that fails the you wait a bit longer and make another attempt. And you might find that your programming framework of choise has got built-in support for this functionality, e.g. Polly in .NET
+
+#### Circuit Breaker
+A circuit breaker sits in between the client and the server and initially it allows all calls through. It is being called circuit breaker is "Closed".
+
+![](/microservices/imgs/CirtuitBreaker1.drawio.png)
+
+Pass call through (Circuit breaker is "closed").
+
+However, if it detects any error, maybe the server is returning error codes, or not responding at all, then cirtuit breaker opens, which means now, whenever the client makes a call, its going to fail fast rather after a configured timeout is elapsed the circuit-breaker allowes some calls through to see if the service hasn't recovered then it remains in the open state a bit longer, again quickly rejecting any incoming requests.
+
+![](/microservices/imgs/CirtuitBreaker2.drawio.png)
+
+Many programming framework will have ready-made implementation of a circuit breaker that you can take advantage of.
