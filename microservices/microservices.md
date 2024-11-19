@@ -318,3 +318,12 @@ Where the microservice itself reports back when its completed when its completed
 - If second service is temporarily unavailable, then the first service is still able to function and the second service will process the queued-up messages once its online again.
 - This approach is also very beneficial for supporting more advanced scaling patterns. Many serverless hosting platforms do this automatically for you, but with containerized solutions, its also possible to achievethe same for the cluster of virtual machines that your containers are running on.
 
+### Message Types
+
+#### Commands
+A command message is a request for a particular action to be performed. e.g. an email send microservice which may work asynchronously.
+We could post a command message that specified the details of the email that should be sent and email microservice could pick that up and send the message.
+
+#### Events
+An event message is simply a way of announcing that something has happened and are not directed to any microservice in particular when you publish events you are allowing any other microservices in your system that are interested to subscribe to that event and perform their own custom actions when it occurs, for example,  if there was an "Order Placed" event then several actions might need to occur as a result of that event, like charging your credit card, sending a confirmation email, checking on stock levels. So each microservices that needs to perform an action when an orer is placed will be triggered by that single event being posted to the event bus.
+
