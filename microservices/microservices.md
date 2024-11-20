@@ -343,3 +343,35 @@ However, if it detects any error, maybe the server is returning error codes, or 
 ![](/microservices/imgs/CirtuitBreaker2.drawio.png)
 
 Many programming framework will have ready-made implementation of a circuit breaker that you can take advantage of.
+
+#### Caching
+Caching can also improve resilience. Fallback to cache data if the downstream service is temporarily unavailable. Of course, that assumes that you have thought about the implecation of using stale data. 
+
+**Message-Broker** like Azure service bus, 
+One of reasons message-brokers are so popular in microservice archirecture is that they have inherent support for resilience.
+- Message can be posted if the recipient is offline
+    - it can catch up later
+- Message brokers support re-deliveries
+    - put the message in Dead-letter queue after multiple failures.
+- Messages may be recieved out of order
+    - You need to make sure that message handler perform the right step, even if they recieve messages out of order.
+- Same message may be recieved multiple times
+    - The message handlers should be **Idempotent**. That means, if calling it twice with the same message has essentially the same effect as calling it once. e.g. Handling an order, we only want to charge you credit card once, and we only want to the order once.
+
+### Service Discovery
+For our microservices to be able to communicate with each other, each microservice needs to have an address. but how can we find out what address all the other microservices are located at?
+We don't want give the Hardcore IP address to the VMs hosting microservices, as that gives us poor flexibility to dynamically move our.
+
+![](/microservices/imgs/ServiceDiscovery.drawio.png)
+
+Our microservices between virtual machines in the cluster, which is necessary in the cloud as machines do need to be taken down from time to time for servicing purposes.
+One way of solving this problem by using **Service Registery**.'
+
+This is a central service that knows where all the other microservices are located. Sometimes this works by each service reporting its location to the Service Registry when it starts up and keeping in touch still available at that address.
+
+Whenever you want to communicate to another service, you can ask the service registry to tell you where that microservice can be found. And Service Registry itself is typically distributed across all the machines in your cluster, which makes it simple for you to be able to contact the service registry.
+
+A number of microservice hosting platforms solve this tricky problem by means of DNS. e.g. If your using PaaS to host your microservices then each microservice you deploy will automatically be allocated a DNS name, that points to a load balancer sitting in front of the actual instances of your microservice. That means you can communicate to your microservices through DNS and not worry about the actual IP addresses of the individual Virtual Machine that are running the microservice and might change over time.
+
+Container Orchestration e.g. Kubernetes also got its own in build DNS and handles routing for you.
+
