@@ -375,3 +375,40 @@ A number of microservice hosting platforms solve this tricky problem by means of
 
 Container Orchestration e.g. Kubernetes also got its own in build DNS and handles routing for you.
 
+### Securing Microservices 
+
+#### Sensitive Data
+e.g. Ordering Service
+- Customer's Order History
+- Payment information
+
+There is a need to secue any Microservice that deals with sensitive data. Encryption plays an important role in protecting our data.
+
+#### Encryption Data
+- **Encryption in transit** means data transfers across the network should be encrypted.
+- Use updated standard encryption algorithms.
+- For HTTP communications, encryption can be achieved by using Transport Layer Security (TLS), so that all requests are made using HTTPs,
+    - by configuring SSL certificates
+    - many cloud Microservice hosting platforms provide mechanisms that simplifies the process of configuring HTTPS for your services.
+- **Encryption at rest** means that whenever its (data) stored on disk, those disks should be encrypted.
+    - **Disk encryption:** Cloud providers are offering encryption at rest at a standard feature for file storage and databases.
+    - **Encrypt Backups:** The backups of sensitive data should also be encrypted.
+
+#### Authentication
+We need to know who is calling our service, Each incoming request need to tell us who the caller is. so the server can make a decision whether they are authorized or not.
+
+Some options to achieve authorization, 
+1. HTTP Authorization options
+    - Use authorization header contain a username and password, its also known as "basic authentication".
+    - With basic authentication approach, server has to store the password which (using) password hashing mechanism.
+
+2. API Key
+    - When one microservice calls through another microservice, the authorization header might contains an API Key.
+    - You give each valid client of your microservice their own API key.
+    - You need to manage more secrets (API Keys) and potentially rotate, if they get compromised.
+
+3. Client Certificate
+    - By using Public-Key-Cryptography, a certificate gives us a very secure way to caller to prove their identity.
+    - Certificates can be complex to install and manage.
+
+#### Using an Identity Server
