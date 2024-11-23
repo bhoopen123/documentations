@@ -437,3 +437,34 @@ One solution of this problem is by using **On behalf of** access tokens. This wa
 
 ![](/microservices/imgs/ConfusedDeputy2.drawio.png)
 
+#### Securing the Network
+Another important defense is to use the network features such as firewalls, IP Whitelisting and virtual networks to secure your microservices.
+
+![](/microservices/imgs/SecuringTheNetwork.drawio.png)
+
+- Because of Virtual Network, we have the ability to reject incomming traffic from outside the virtual network and only them to communicate within each other.
+- This idea protects back-end microservices from external access.
+- If any application do need to communicate to one or more of these microservices, then **API Gateway** or **backend for frontend** can be used.
+- An API Gateway can be connected to internet as well as virtual network to pass on the incomming requests to the backend microservices.
+- We can choose which backend APIs are exposed through the API gateway.
+- API Gateway is also the single point of entry to the exposed backend microservices.
+- Some cloud API Gateways can also be configured with a firewall and other types of attack protection, such as DDoS (Distribute denial-of-Service), SQL injection attacks.
+- Some non-public facing websites like Marketing campain website or Administrative websites which are intended to use by company staff can be configured for **IP Whitelisting**, so this website rejects any traffic that doesn't come from certain known IP Address.
+
+![](/microservices/imgs/SecuringTheNetwork2.drawio.png)
+
+#### Defence in Depth
+We have discussed several techniques to secure our microservices, 
+- Encryption in transit
+- Access tokens
+- Network Securities
+    - Vritual Network
+    - Firewall
+    - IP Whitelisting
+
+- Defence in Depth principle states that you should not rely entirely on a Single technique to secure your application because if that one defense is breached then everything is lost.
+- Apply multiple layers of protection for more sensitive data
+- The above three techniques should be considered to be essential for securing any microservices application that deals with sensitive data.
+
+#### Additional Defensive Measures
+
