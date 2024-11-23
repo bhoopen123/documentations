@@ -412,3 +412,28 @@ Some options to achieve authorization,
     - Certificates can be complex to install and manage.
 
 #### Using an Identity Server
+Using Identity Server is an promissing opproach for authentication. It uses industry standard protocols, such as **OAuth2.0** and **OpenId Connect**.
+
+![](/microservices/imgs/IdentityServer.drawio.png)
+
+- Only one server (Identity Server) has the responsibility for authenticating users and managing their credentials securely.
+- Because the Identity Server is implementing the industry standards protocols, like OpenId connect, so we don't need to write any code for this component. For example, **Identity Server 4** for an OpenId Connect and OAuth2.0 framework for ASP.NET Core.
+
+#### Authorization
+- Authentication: Who is calling?
+- Authorization: What can they do?
+
+Many web API frameworks, like ASP.NET Core provide built-in mechanism that help you perform authorization by checking various things about the user, such as, whether they have got a perticular role or not.
+
+Consider carefully what callers should be allowed to do.
+
+#### Confused Deputy
+
+![](/microservices/imgs/ConfusedDeputy1.drawio.png)
+
+When the Ordering Microservice calls the Payment Service, it might send Credentials that simply say, that this is a ordering service making the call. And because the Payment Service trusts the Ordering Service, it assumes that its safe to perform whatever action has been requested. But this could be risky because what if I could somehow trick the ordering service to ask the payment service to pay my order but using someone else's credit card details. This issue is known as **Confused Deploy**.
+
+One solution of this problem is by using **On behalf of** access tokens. This way when Ordering Service calls the Payment Service, it still identifies itselfs as the Ordering Service, but it also tells the Payment Service that this is a call being made on behalf of that user. And that gives Payment Service more information to go on and it can reject the request the user is paying with someone else's card.
+
+![](/microservices/imgs/ConfusedDeputy2.drawio.png)
+
