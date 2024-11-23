@@ -467,4 +467,14 @@ We have discussed several techniques to secure our microservices,
 - The above three techniques should be considered to be essential for securing any microservices application that deals with sensitive data.
 
 #### Additional Defensive Measures
+- Modern hackers have access to many sophisticated tools and techniques, and Software Developer are not aware against all of them.
+- **Arrange Penetration Testing** to be perfromed by a team of infosec experts who can test the defenses of the application against state-of-the-art hacking techniques and can also give some **expert advice on how to increase the security of your application**.
+- **Automated Security Testing** to verify that the security is working as expected. Run some tests to prove **that APIs reject unauthorized callers**.
+- **Attact detection** is also important to know that some attack is in progress, for example, Plot scanning, repeated login attempts, HTTP requests, phishing for sensitive files, SQL Injection attack attempts , can be detected in real time.
+
+You should configure alert to know when they are happening and to react quickly by blocking the IP Address of the attacker or even temporarily shutdown part of your system tp protect.
+- **Logging and Auditing** of all of the actions being performed in the system to know exactly what data has been compromised.
+
+
+### Delivering Microservices
 
