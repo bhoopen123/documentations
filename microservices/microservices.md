@@ -518,3 +518,21 @@ Max Instances : 5
 
 Configuration files are often used with other deployment manifests to allow you to deploy a specific version of a microservice into a specific environment.
 
+### Cloud Infrastructure Deployment
+
+#### Terraform
+
+#### Azure ARM templates
+
+### Independent Upgrades
+Upgrading one microservice should not require all microservices to be upgraded. Automated process needs to be able to update just one microservice at a time even if it can deploy them all at once.
+
+#### Upgrade Stratgies
+##### Stop V1, start V2
+This is a valid approach, but it does cause a small period of service unavalability.
+
+##### Blue gree Swap
+Run old and new version of service simaltaneously and then swap traffic one to the other by means of a load balancer, it minimized neligible downtime.
+
+##### Rolling upgrade
+If you have got multiple instances of service running, then replace the instance one by one.
