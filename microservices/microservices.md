@@ -536,3 +536,28 @@ Run old and new version of service simaltaneously and then swap traffic one to t
 
 ##### Rolling upgrade
 If you have got multiple instances of service running, then replace the instance one by one.
+
+### Monitoring Microservices
+One of the big things with microservices is that there are more things to be monitered. Many processes on many hosts. So, we need a system, where all of our monitoring telemetry and logs are available in a certalized place.
+- System health dashboard is preferred with a ability to dive in deeper.
+
+**What should we Moniter?**
+#### Host metrics
+    - CPU percentage 
+    - Mempry usage
+    - Configure alerts
+
+#### Application Metrics
+    - # HTTP requests (failure, success, etc.)
+    - Error codes of failed requests (401, 500, etc.).
+    - Queue length (for message broker).
+    - Health check endpoints (API to call the service to check if service is running).
+
+#### Logs
+    - Each microservices should be emitting logs which should be kept at a certralized location.
+    - Standardize log output
+    - Example, Azure Application Insights.
+
+Take advantages of the built-in monitoring and observability capability of your microservices hosting platform.
+
+-------------------------------------
