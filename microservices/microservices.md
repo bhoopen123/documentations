@@ -478,3 +478,43 @@ You should configure alert to know when they are happening and to react quickly 
 
 ### Delivering Microservices
 
+#### Automated Deployment
+If we have got a **reliable and repeatable** deployment process for our microservices, that allows us to deploy more frequently as soon as new features or bugs became available.
+
+#### Continuous Integration (CI)
+CI server can be configured to build the code/microservice whenever a new code/feature is checked-in, if also run automated unit tests.
+
+#### Release Pipelines
+The CI server can trigger something called as a release pipeline. A release pipeline starts off where the CI build has finished.
+
+![](/microservices/imgs/ReleasePipelines.drawio.png)
+
+### Deployment Environments
+
+#### Development
+- Debug Code
+
+#### QA 
+- End-to-end tests
+- Manual testing
+- Pen testing
+- Performence testing
+
+#### Production
+- Multiple production Environments
+    - per- customer groups
+    - per region
+
+### Parameterized Deployments
+By defining each environment in a configuration file, like, JSON or YAML. These configuration files actually express, what is difference about the environments we are deploying to, 
+For example, #qa.yaml
+```
+Name : QA
+Region : West Europe
+VM Size : Medium
+Min Instances : 2
+Max Instances : 5
+```
+
+Configuration files are often used with other deployment manifests to allow you to deploy a specific version of a microservice into a specific environment.
+
