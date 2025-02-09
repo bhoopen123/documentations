@@ -1,7 +1,7 @@
 # Intercept and change Microsoft.DataAnnotation validation message in .NET 8.0 Web Api
 ## Create a Web API Project
 - The simple Post API to save a record
-```
+```csharp
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -15,7 +15,7 @@
     }
 ```
 - `WeatherForecastRequest` model will look like, 
-```
+```csharp
     public record WeatherForecastRequest([Required, StringLength(10)] string City,
                                          int Temperature,
                                          string? Summary)
@@ -33,7 +33,7 @@
 
 ## Add validation to restrict any unknown properties in API request
 
-```
+```csharp
 builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                 {
@@ -54,7 +54,7 @@ This can be achieved in multiple ways,
 
 ### Approach 1: - By setting `AllowInputFormatterExceptionMessages `= false
 
-```
+```csharp
 builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                 {
@@ -75,7 +75,7 @@ builder.Services.AddControllers()
 
 -	Create a new filter `ReformValidationMessageAttribute `,
 
-```
+```csharp
 public class ReformValidationMessageAttribute : ActionFilterAttribute
 	    {
 	        public override void OnResultExecuting(ResultExecutingContext context)
@@ -106,7 +106,7 @@ public class ReformValidationMessageAttribute : ActionFilterAttribute
 - This filter will check the response of any BadRequest and update the message containing internal C# details to the message we want to return.
 - Add the filter to the controller options, 
 
-```
+```csharp
 builder.Services.AddControllers(option =>
                 {
                     option.Filters.Add(typeof(ReformValidationMessageAttribute));
