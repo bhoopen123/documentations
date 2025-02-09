@@ -11,3 +11,5 @@
 - [.NET 6.0 Basics](/dotnet6-basics/understanding-dotnet6.0.md) 
 
 - [Microservice basics](/microservices/microservices.md) 
+
+- [Intercept and change Microsoft.DataAnnotation validation message in .NET 8.0 Web Api](/asp.net-web-api/change-validation-message-in-.NET8.0-web-api.md)
