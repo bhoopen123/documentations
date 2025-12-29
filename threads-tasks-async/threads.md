@@ -46,3 +46,65 @@ class Counter
     }
 }
 ```
+
+### Monitor
+- `Monitor.Enter` is part of the System.Threading.Monitor class.
+- It provides exclusive locking for a block of code, just like `lock`.
+- When a thread calls `Monitor.Enter(obj)`, it acquires a lock on `obj`.
+- Other threads trying to enter with the same object are blocked until the lock is released.
+
+- Example, 
+
+```
+object lockObj = new object();
+
+Monitor.Enter(lockObj);
+try
+{
+    // Critical section
+    Console.WriteLine("Thread-safe work here");
+}
+finally
+{
+    // Always release the lock
+    Monitor.Exit(lockObj);
+}
+```
+
+#### Key Points
+- You must always pair `Monitor.Enter` with `Monitor.Exit`.
+- The `try/finally` ensures the lock is released even if an exception occurs.
+- Forgetting `Monitor.Exit` can cause deadlocks.
+
+
+- `TryEnter` lets you attempt to acquire a lock with a timeout. Useful when you don’t want threads to wait indefinitely.
+
+- Example, 
+
+```
+object lockObj = new object();
+
+if (Monitor.TryEnter(lockObj, 1000)) // wait up to 1 second
+{
+    try
+    {
+        Console.WriteLine("Lock acquired");
+    }
+    finally
+    {
+        Monitor.Exit(lockObj);
+    }
+}
+else
+{
+    Console.WriteLine("Could not acquire lock");
+}
+```
+
+- Use lock for most cases — it’s cleaner and safer.
+- Use Monitor.Enter when you need advanced control:
+  - Timeouts (TryEnter)
+  - Signaling between threads (Wait, Pulse)
+  - More complex synchronization patterns
+
+
