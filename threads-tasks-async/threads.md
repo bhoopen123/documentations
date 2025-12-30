@@ -107,4 +107,126 @@ else
   - Signaling between threads (Wait, Pulse)
   - More complex synchronization patterns
 
+### Mutex
+A `Mutex` is a synchronization primitive that can be used across multiple processes, while a `lock` (keyword) is limited to threads within the same process. `Mutex` is heavier and slower because it relies on the operating system kernel, whereas `lock` is faster and simpler since it’s just syntactic sugar over `Monitor`.
+
+- A Mutex (short for Mutual Exclusion) is an object that ensures only one thread or process can access a resource at a time.
+- Works across multiple processes, not just within a single application.
+- Slower than lock because it involves kernel-level operations.
+
+- Example
+```
+Mutex mutex = new Mutex();
+mutex.WaitOne();   // Acquire the mutex
+// Critical section
+mutex.ReleaseMutex(); // Release the mutex
+```
+
+- Example 1: Basic Mutex in a Single Process
+Even though lock is usually enough inside one process, you can still use a Mutex:
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static Mutex mutex = new Mutex();
+
+    static void Main()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            Thread t = new Thread(Worker);
+            t.Start(i);
+        }
+    }
+
+    static void Worker(object id)
+    {
+        Console.WriteLine($"Thread {id} waiting for Mutex...");
+        mutex.WaitOne(); // Acquire
+        Console.WriteLine($"Thread {id} entered critical section.");
+        Thread.Sleep(1000); // Simulate work
+        Console.WriteLine($"Thread {id} leaving critical section.");
+        mutex.ReleaseMutex(); // Release
+    }
+}
+```
+
+Output: 
+```text
+Thread 0 waiting for Mutex...
+Thread 0 entered critical section.
+Thread 1 waiting for Mutex...
+Thread 0 leaving critical section.
+Thread 1 entered critical section.
+```
+
+👉 Only one thread at a time enters the critical section.
+
+🧩 Example 2: Named Mutex Across Processes
+This is where Mutex shines compared to lock. You can synchronize different applications.
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        // Named Mutex (system-wide)
+        using (Mutex mutex = new Mutex(false, "Global\\MyAppMutex"))
+        {
+            if (!mutex.WaitOne(0, false))
+            {
+                Console.WriteLine("Another instance is already running!");
+                return;
+            }
+
+            Console.WriteLine("Running... Press Enter to exit.");
+            Console.ReadLine();
+        }
+    }
+}
+```
+
+Scenario:
+- Run this program twice.
+- The second instance will detect the first one and exit with the message:
+"Another instance is already running!"
+👉 This is a common technique to prevent multiple instances of an application.
+
+🧩 Example 3: Timeout with Mutex
+You can set a timeout when waiting for a Mutex.
+
+```csharp
+if (mutex.WaitOne(2000)) // Wait for 2 seconds
+{
+    try
+    {
+        Console.WriteLine("Acquired Mutex!");
+        // Work here
+    }
+    finally
+    {
+        mutex.ReleaseMutex();
+    }
+}
+else
+{
+    Console.WriteLine("Could not acquire Mutex within 2 seconds.");
+}
+```
+👉 Useful when you don’t want threads to block indefinitely.
+
+👉 If you forget to release, the Mutex stays locked, causing deadlocks.
+
+⚖️ When to Use Mutex
+- Use lock for thread synchronization inside one process (faster, simpler).
+- Use Mutex when:
+  - You need cross-process synchronization.
+  - You want to prevent multiple instances of an app.
+  - You need OS-level synchronization objects.
 
