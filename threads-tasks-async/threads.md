@@ -230,3 +230,88 @@ else
   - You want to prevent multiple instances of an app.
   - You need OS-level synchronization objects.
 
+### Reader and Writer Lock
+`ReaderWriterLockSlim` in C# is a thread synchronization technique that allows multiple threads to read concurrently while ensuring only one thread can write at a time on a shared resource. It improves performance compared to a simple lock when reads are frequent and writes are rare.
+
+🔑 What is ReaderWriterLockSlim?
+- Designed for multithreaded environments where shared resources are accessed by multiple readers and occasional writers.
+- Key advantage: Multiple readers can access simultaneously, but writers get exclusive access.
+- Supports UpgradeableReadLock: a thread can start with read access and later upgrade to write access without releasing the lock.
+
+⚙️ Lock Modes
+
+| Lock Mode | Purpose |
+|---------- | -------- | 
+| EnterReadLock() | Multiple threads can read concurrently. |
+| EnterWriteLock() | Only one thread can write; blocks readers and other writers. |
+ EnterUpgradeableReadLock() | Allows a thread to read, but later upgrade to write if needed. |
+| ExitReadLock() / ExitWriteLock() | Releases the lock after use. |
+
+📖 Example 1: Basic Reader/Writer
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    private static ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
+    private static string sharedData = "Initial Value";
+
+    static void Reader()
+    {
+        rwLock.EnterReadLock();
+        try
+        {
+            Console.WriteLine($"Reader Thread {Thread.CurrentThread.ManagedThreadId} read: {sharedData}");
+        }
+        finally
+        {
+            rwLock.ExitReadLock();
+        }
+    }
+
+    static void Writer()
+    {
+        rwLock.EnterWriteLock();
+        try
+        {
+            sharedData = $"Updated by Thread {Thread.CurrentThread.ManagedThreadId}";
+            Console.WriteLine(sharedData);
+        }
+        finally
+        {
+            rwLock.ExitWriteLock();
+        }
+    }
+
+    static void Main()
+    {
+        Thread t1 = new Thread(Reader);
+        Thread t2 = new Thread(Writer);
+        Thread t3 = new Thread(Reader);
+
+        t1.Start();
+        t2.Start();
+        t3.Start();
+    }
+}
+```
+
+👉 Here, multiple readers can run simultaneously, but the writer blocks them until it finishes.
+
+⚠️ Risks & Best Practices
+
+- Always release locks in finally blocks to avoid deadlocks.
+
+- Prefer `ReaderWriterLockSlim` over `ReaderWriterLock` (older class) because it’s faster and avoids common deadlock scenarios.
+
+Use when reads dominate writes; otherwise, a simple lock may be more efficient.
+
+✅ In short: Use ReaderWriterLockSlim when you have frequent reads and occasional writes to shared data. It boosts performance by allowing concurrent readers while still protecting against race conditions.
+
+C# ReaderWriterLockSlim Class - GeeksforGeeks. https://www.geeksforgeeks.org/c-sharp/c-sharp-readerwriterlockslim-class/
+
+System.Threading.ReaderWriterLockSlim class - .NET. https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-threading-readerwriterlockslim
+
+C# ReaderWriterLockSlim - C# Tutorial. https://www.csharptutorial.net/csharp-concurrency/csharp-readerwriterlockslim/
