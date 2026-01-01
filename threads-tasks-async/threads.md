@@ -409,5 +409,83 @@ class Program
 - Don’t set the count too high—otherwise it defeats the purpose of limiting access.
 
 ✅ In short: Semaphores are perfect when you want to allow multiple threads (but not unlimited) to access a resource at the same time.
-Would you like me to also show a real-world example (like controlling access to a database connection pool)?
+Real-world example are like controlling access to a database connection pool.
+
+### Signaling
+Signaling is a way for threads to communicate—one thread can pause until another thread signals it to continue. The most common signaling primitives are `AutoResetEvent` and `ManualResetEvent`. An `AutoResetEvent` automatically resets after releasing a single waiting thread, while a `ManualResetEvent` stays signaled until you manually reset it.
+
+- Thread signaling lets one thread notify another that it can proceed.
+- Implemented via WaitHandle-derived classes (AutoResetEvent, ManualResetEvent).
+- Useful when you need to coordinate tasks across multiple threads.
+
+#### AutoResetEvent
+Behavior:
+- Starts in either signaled (true) or non-signaled (false) state.
+- When signaled, it releases exactly one waiting thread and then automatically resets to non-signaled.
+- Other threads remain blocked until signaled again.
+
+📖 Example: AutoResetEvent
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static AutoResetEvent autoEvent = new AutoResetEvent(false);
+
+    static void Worker(int id)
+    {
+        Console.WriteLine($"Worker {id} waiting...");
+        autoEvent.WaitOne(); // Wait for signal
+        Console.WriteLine($"Worker {id} proceeding!");
+    }
+
+    static void Main()
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            new Thread(() => Worker(i)).Start();
+        }
+
+        Thread.Sleep(1000);
+        Console.WriteLine("Main thread signaling...");
+        autoEvent.Set(); // Releases one worker
+        Thread.Sleep(1000);
+        autoEvent.Set(); // Releases another worker
+        Thread.Sleep(1000);
+        autoEvent.Set(); // Releases the last worker
+    }
+}
+```
+
+👉 Output shows workers waiting, then each one proceeds one at a time when signaled.
+
+#### ManualResetEvent (for comparison)
+- Unlike `AutoResetEvent`, `ManualResetEvent` stays signaled until you call `Reset()`.
+- Multiple threads can proceed once signaled.
+
+```csharp
+ManualResetEvent manualEvent = new ManualResetEvent(false);
+
+// Signal all waiting threads
+manualEvent.Set();
+
+// Reset to block again
+manualEvent.Reset();
+```
+
+📌 Real-World Use Cases
+
+AutoResetEvent:
+- Producer-consumer scenarios (one item wakes one consumer).
+- Sequential task execution.
+
+ManualResetEvent:
+- Broadcasting a signal to multiple threads (e.g., "start processing now").
+
+⚠️ Best Practices
+- Always call WaitOne() inside a thread that should pause until signaled.
+- Use Set() to signal, and Reset() (for ManualResetEvent) to block again.
+- Prefer SemaphoreSlim or Task-based coordination for modern async code, but events are still useful for low-level thread control.
+
 
