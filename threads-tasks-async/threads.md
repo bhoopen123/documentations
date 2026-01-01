@@ -315,3 +315,99 @@ C# ReaderWriterLockSlim Class - GeeksforGeeks. https://www.geeksforgeeks.org/c-s
 System.Threading.ReaderWriterLockSlim class - .NET. https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-threading-readerwriterlockslim
 
 C# ReaderWriterLockSlim - C# Tutorial. https://www.csharptutorial.net/csharp-concurrency/csharp-readerwriterlockslim/
+
+
+### Semaphore / SemaphoreSlim
+A `Semaphore` in C# is a thread synchronization primitive that controls access to a shared resource by limiting the number of threads that can enter a critical section at the same time. Unlike a `lock` (which allows only one thread), a semaphore can allow N threads concurrently.
+
+- Maintains a count of how many threads can access a resource simultaneously.
+- When the count reaches zero, additional threads are blocked until another thread releases the semaphore.
+- Useful for resource pools (like database connections, file handles, or limited hardware resources).
+
+
+#### Types of Semaphores
+ - Semaphore : Can be shared across processes. 
+ - SemaphoreSlim: Lightweight, faster, but limited to threads within the same process. 
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    // Allow max 3 threads at a time
+    private static Semaphore semaphore = new Semaphore(3, 3);
+
+    static void Worker(int id)
+    {
+        Console.WriteLine($"Thread {id} waiting...");
+        semaphore.WaitOne(); // Acquire
+        try
+        {
+            Console.WriteLine($"Thread {id} entered.");
+            Thread.Sleep(2000); // Simulate work
+            Console.WriteLine($"Thread {id} leaving.");
+        }
+        finally
+        {
+            semaphore.Release(); // Release
+        }
+    }
+
+    static void Main()
+    {
+        for (int i = 1; i <= 6; i++)
+        {
+            new Thread(() => Worker(i)).Start();
+        }
+    }
+}
+```
+
+👉 Output shows only 3 threads run at once, others wait until a slot is free.
+
+
+Using SemaphoreSlim
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(2); // allow 2 threads
+
+    static async Task Worker(int id)
+    {
+        Console.WriteLine($"Worker {id} waiting...");
+        await semaphoreSlim.WaitAsync(); // async acquire
+        try
+        {
+            Console.WriteLine($"Worker {id} entered.");
+            await Task.Delay(1000); // simulate async work
+            Console.WriteLine($"Worker {id} leaving.");
+        }
+        finally
+        {
+            semaphoreSlim.Release();
+        }
+    }
+
+    static async Task Main()
+    {
+        var tasks = Enumerable.Range(1, 5).Select(i => Worker(i));
+        await Task.WhenAll(tasks);
+    }
+}
+```
+
+👉 SemaphoreSlim is ideal for async/await scenarios in modern C# applications.
+
+⚠️ Best Practices
+- Always release the semaphore in a finally block to avoid deadlocks.
+- Use SemaphoreSlim for in-process scenarios (faster, supports async).
+- Use Semaphore when you need cross-process synchronization.
+- Don’t set the count too high—otherwise it defeats the purpose of limiting access.
+
+✅ In short: Semaphores are perfect when you want to allow multiple threads (but not unlimited) to access a resource at the same time.
+Would you like me to also show a real-world example (like controlling access to a database connection pool)?
+
