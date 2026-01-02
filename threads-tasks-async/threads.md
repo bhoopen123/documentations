@@ -488,4 +488,19 @@ ManualResetEvent:
 - Use Set() to signal, and Reset() (for ManualResetEvent) to block again.
 - Prefer SemaphoreSlim or Task-based coordination for modern async code, but events are still useful for low-level thread control.
 
+## Thread Affinity
+
+In C#, thread affinity refers to binding a thread (or process) to specific CPU cores so that it always executes on those cores. This is done using processor affinity masks, which control which CPUs the operating system scheduler can assign to a thread.
+
+## Thread Safe
+
+In multi threading computer programming, a function or data structure or a class is thread safe when it can be used concurrently by multiple threads without causing race conditions, unexpected behaviors, or data corruptions.
+
+## Debugging Multi-threaded program in Visual Studio
+- Run the application in `Debug` mode.
+- Pause the program, (or use debug breaks).
+- Once you pause the program all the threads will get paused.
+- Use `Threads` window (Debug -> windows -> Threads) and `Parallel Stack` window (Debug -> windows -> Parallel Stacks).
+- In the `Threads` window, we can freeze a thread to change the thread execution sequence (Freeze and Continue). and then release the thread (Play and Continue).
+
 
