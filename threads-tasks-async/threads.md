@@ -503,4 +503,208 @@ In multi threading computer programming, a function or data structure or a class
 - Use `Threads` window (Debug -> windows -> Threads) and `Parallel Stack` window (Debug -> windows -> Parallel Stacks).
 - In the `Threads` window, we can freeze a thread to change the thread execution sequence (Freeze and Continue). and then release the thread (Play and Continue).
 
+## Thread States
+ThreadState Enum (System.Threading)
+
+| State | Meaning |
+|-------- | -------| 
+| Unstarted |Thread created but not started  | 
+| Running | Thread is executing  | 
+| WaitSleepJoin | Thread is blocked (waiting, sleeping, or joining another thread) | 
+| Suspended | Thread execution suspended (legacy, unsafe) | 
+| AbortRequested | Abort has been requested  | 
+| Aborted | Thread has been aborted  | 
+| Stopped | Thread has finished execution  | 
+
+Important Notes
+
+- Modern .NET discourages `Suspend()` and `Abort()` because they are unsafe and can leave shared resources in inconsistent states.
+- Instead, use cancellation tokens (`CancellationTokenSource`) for cooperative cancellation.
+- Thread states are mainly useful for diagnostics and debugging, not for controlling thread execution directly.
+- You can't see the Thread State in the Debug mode (neither using `Threads` window or `Intermediate` window). It can be print in the logs.
+
+## Make Thread wait
+
+1. `Thread.Sleep(int millisecondsTimeout)`
+- Behavior: Suspends the current thread for the specified time.
+- Mechanism: The OS scheduler removes the thread from the CPU and puts it into a waiting state.
+- Pros:
+    - Frees CPU resources during the sleep.
+    - Simple and predictable.
+- Cons:
+    - Context switch overhead (thread goes to sleep, then wakes up).
+    - Not precise for very short waits (resolution depends on OS timer).
+- Use case: Long waits (hundreds of ms or seconds) where CPU efficiency matters.
+
+```csharp
+Thread.Sleep(1000); // Sleep for 1 second
+```
+
+🔄 2. `Thread.SpinWait(int iterations)`
+- Behavior: Busy-waits by repeatedly executing a small loop for the given number of iterations.
+- Mechanism: The thread does not yield; it keeps the CPU busy spinning.
+- Pros:
+   - Extremely fast for very short waits (nanoseconds to microseconds).
+   - Avoids context switch overhead.
+- Cons:
+   - Wastes CPU cycles while spinning.
+   - Not suitable for longer waits.
+- Use case: Low-level synchronization, waiting for a condition that will be true almost immediately.
+
+```csharp
+Thread.SpinWait(1000); // Spins for ~1000 iterations
+```
+
+⏱️ 3. `SpinWait.SpinUntil(Func<bool> condition, int millisecondsTimeout)`
+- Behavior: Spins until a condition becomes true or timeout expires.
+- Mechanism: Internally uses a mix of spinning and yielding (adaptive strategy).
+- Pros:
+   - More flexible: waits for a condition, not just time.
+   - Adaptive: starts with busy spinning, then yields/sleeps if condition takes longer.
+- Cons:
+   - Still wastes CPU if condition takes long.
+   - Timeout precision depends on OS.
+- Use case: Waiting for a flag/condition that is expected to be set quickly.
+
+```csharp
+bool success = SpinWait.SpinUntil(() => flag == true, 2000);
+```
+
+⚖️ Comparison Table
+| Method | Type of Wait | CPU Usage | Precision | Best For |
+|--------|--------------|-----------|-----------|----------|
+| Thread.Sleep | Blocking  | Low  | Coarse | Long waits, freeing CPU | 
+| Thread.SpinWait | Busy-spin  | High | Very fine | Ultra-short waits, avoiding context switch | 
+| SpinWait.SpinUntil | Conditional | Adaptive | Medium | Waiting for quick condition with timeout | 
+
+#### Summary
+- Use `Thread.Sleep` when you want to pause without hogging CPU.
+- Use `Thread.SpinWait` for tiny waits where context switch overhead is worse than spinning.
+- Use `SpinWait.SpinUntil` when you need to wait for a condition but expect it to be satisfied quickly.
+
+## Thread Result
+There is no build in way to return a result from a Thread. One way is to do that is using a Shared variable.
+
+
+## Cancelling a Thread
+Cancelling a thread in C# is a bit nuanced because threads don’t have a built-in cancellation mechanism. Unlike `Tasks` (which support `CancellationToken`), a Thread must be cooperatively stopped by the code running inside it.
+
+### Why You Can’t Just “Kill” a Thread
+- Methods like `Thread.Abort()` existed in older .NET, but they are obsolete and unsafe (they throw exceptions inside the thread, leaving shared state inconsistent).
+- Modern .NET encourages cooperative cancellation: the thread checks a flag or token and exits gracefully.
+
+### Common Approaches to Cancel a Thread
+
+#### 1. Using a Shared Flag
+- You define a `volatile` boolean flag that the thread checks periodically.
+- When you set the flag, the thread exits its loop.
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static volatile bool _cancel = false;
+
+    static void Worker()
+    {
+        while (!_cancel)
+        {
+            Console.WriteLine("Working...");
+            Thread.Sleep(500); // simulate work
+        }
+        Console.WriteLine("Thread cancelled gracefully.");
+    }
+
+    static void Main()
+    {
+        Thread t = new Thread(Worker);
+        t.Start();
+
+        Thread.Sleep(2000); // let it run for a while
+        _cancel = true;     // request cancellation
+        t.Join();           // wait for thread to finish
+    }
+}
+```
+
+#### 2. Using CancellationToken with Tasks (Preferred in Modern .NET)
+Even though Thread doesn’t support tokens directly, you can use Task instead, which is more flexible.
+
+```csharp
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        var cts = new CancellationTokenSource();
+
+        Task t = Task.Run(() =>
+        {
+            while (!cts.Token.IsCancellationRequested)
+            {
+                Console.WriteLine("Working...");
+                Thread.Sleep(500);
+            }
+            Console.WriteLine("Task cancelled gracefully.");
+        }, cts.Token);
+
+        await Task.Delay(2000);
+        cts.Cancel(); // request cancellation
+        await t;      // wait for task to finish
+    }
+}
+```
+
+#### 3. Using ManualResetEvent or AutoResetEvent
+You can signal a thread to stop using synchronization primitives.
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static ManualResetEvent stopSignal = new ManualResetEvent(false);
+
+    static void Worker()
+    {
+        while (!stopSignal.WaitOne(0))
+        {
+            Console.WriteLine("Working...");
+            Thread.Sleep(500);
+        }
+        Console.WriteLine("Thread stopped via signal.");
+    }
+
+    static void Main()
+    {
+        Thread t = new Thread(Worker);
+        t.Start();
+
+        Thread.Sleep(2000);
+        stopSignal.Set(); // signal cancellation
+        t.Join();
+    }
+}
+```
+
+#### Comparison of Approaches
+| Approach  | Safe? | Ease of Use | Modern Recommendation | 
+|-----------|-------|-------------|-----------------------|
+| Thread.Abort() | No  | Easy | Deprecated, unsafe  | 
+| volatile | Yes | Simple | Good for basic threads  | 
+| CancellationToken | Yes | Very easy  | Best practice in modern .NET | 
+| ManualResetEvent | Yes | Flexible | Good for signaling | 
+
+👉 Summary:
+- Never use `Thread.Abort`.
+- For raw threads, use a shared flag or reset event.
+- For modern apps, prefer Tasks with CancellationToken.
+
+
 
