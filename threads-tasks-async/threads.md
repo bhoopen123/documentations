@@ -706,5 +706,81 @@ class Program
 - For raw threads, use a shared flag or reset event.
 - For modern apps, prefer Tasks with CancellationToken.
 
+## ThreadPool
+
+- The ThreadPool is a pool of worker threads managed by the CLR (Common Language Runtime).
+- Instead of creating and destroying threads manually, you can queue work items to the pool.
+- The runtime reuses threads, reducing overhead and improving scalability.
+- It’s ideal for short-lived, lightweight tasks.
+
+### Key Features
+- Threads are background threads (they don’t keep the process alive).
+- Managed by the CLR: you don’t control their lifecycle directly.
+- Optimized for parallel execution of small tasks.
+- Supports queuing work items, timers, and async I/O.
+
+### Example: Queueing Work
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        // Queue a task to the ThreadPool
+        ThreadPool.QueueUserWorkItem(Work, "Task 1");
+        ThreadPool.QueueUserWorkItem(Work, "Task 2");
+
+        Console.WriteLine("Main thread continues...");
+        Thread.Sleep(2000); // Give time for tasks to finish
+    }
+
+    static void Work(object state)
+    {
+        Console.WriteLine($"Thread {Thread.CurrentThread.ManagedThreadId} is processing {state}");
+        Thread.Sleep(1000); // simulate work
+        Console.WriteLine($"{state} completed.");
+    }
+}
+```
+
+### Example: ThreadPool with Timer
+ThreadPool also powers timers.
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        Timer timer = new Timer(Callback, null, 0, 1000); // run every 1 sec
+        Console.WriteLine("Press Enter to exit...");
+        Console.ReadLine();
+    }
+
+    static void Callback(object state)
+    {
+        Console.WriteLine($"Timer callback on thread {Thread.CurrentThread.ManagedThreadId}");
+    }
+}
+```
+
+#### Comparison: Thread vs ThreadPool
+| Aspect | Thread | ThreadPool |
+|--------|--------|------------| 
+|Creation| Manual (new Thread) | Automatic, managed by CLR | 
+|Lifecycle| You control start/stop  | CLR manages reuse | 
+|Overhead| Higher (new thread each time) | Lower (threads reused) | 
+|Best for| Long-running, dedicated tasks  | Short-lived, lightweight tasks  | 
+|Background/Foreground| Can be either  | Always background | 
+
+#### Summary
+- Use `ThreadPool` when you need to run many small tasks efficiently.
+- Avoid it for long-running or blocking tasks (dedicated Thread or Task is better).
+- In modern .NET, Task.Run internally uses the ThreadPool, so you often don’t need to call it directly.
 
 
