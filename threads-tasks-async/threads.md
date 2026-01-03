@@ -783,4 +783,120 @@ class Program
 - Avoid it for long-running or blocking tasks (dedicated Thread or Task is better).
 - In modern .NET, Task.Run internally uses the ThreadPool, so you often don’t need to call it directly.
 
+## Exception Handling in Threads
+
+Exception handling in C# threads is a bit different from normal synchronous code because exceptions thrown inside a thread don’t automatically propagate back to the thread that started it. You need to handle them inside the thread itself.
+
+### 1. Handle Exceptions Inside the Thread
+The most common way is to wrap the thread’s work in a try-catch.
+
+```csharp
+using System;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        Thread t = new Thread(() =>
+        {
+            try
+            {
+                Console.WriteLine("Thread started...");
+                throw new InvalidOperationException("Something went wrong!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception caught in thread: {ex.Message}");
+            }
+        });
+
+        t.Start();
+        t.Join(); // Wait for thread to finish
+        Console.WriteLine("Main thread continues...");
+    }
+}
+```
+👉 Here, the exception is caught inside the thread itself. If you don’t catch it, the thread will terminate abruptly.
+
+### 2. Communicate Exceptions Back to Main Thread
+Since exceptions don’t bubble up automatically, you can store them and rethrow in the main thread.
+
+```csharp
+Exception threadException = null;
+
+Thread t = new Thread(() =>
+{
+    try
+    {
+        throw new ApplicationException("Thread failed!");
+    }
+    catch (Exception ex)
+    {
+        threadException = ex; // capture exception
+    }
+});
+
+t.Start();
+t.Join();
+
+if (threadException != null)
+{
+    Console.WriteLine($"Exception from thread: {threadException.Message}");
+    // Optionally rethrow: throw threadException;
+}
+```
+
+### 3. Using Task Instead of Raw Threads (Preferred)
+Tasks integrate with async/await and propagate exceptions automatically.
+
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                Console.WriteLine("Task started...");
+                throw new InvalidOperationException("Task error!");
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception caught in Main: {ex.Message}");
+        }
+    }
+}
+```
+👉 With Task, you don’t need to manually capture exceptions—they flow naturally to the caller.
+
+### 4. Global Exception Handling
+For unhandled exceptions in threads:
+- Use `AppDomain.CurrentDomain.UnhandledException` for non-UI threads.
+- Use `Application.ThreadException` for Windows Forms UI threads.
+
+```csharp
+AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+{
+    Console.WriteLine($"Unhandled exception: {((Exception)e.ExceptionObject).Message}");
+};
+```
+
+### Comparison
+| Approach | Exception Handling Style | Best Use Case |
+|----------|--------------------------|---------------| 
+| `try-catch` inside thread | Local handling | Simple background threads | 
+| Capture exception in variable | Manual propagation | Coordinating with main thread | 
+| `Task` with `async/await` | Automatic propagation | Modern apps, async workflow | 
+| Global handlers `UnhandledException` | Catch-all safety net | Logging, last-resort handling | 
+
+### Summary:
+- Always wrap thread code in try-catch.
+- If you need the main thread to know about exceptions, capture and propagate them manually.
+- Prefer Task over raw Thread for modern apps—exception handling is much cleaner.
 
