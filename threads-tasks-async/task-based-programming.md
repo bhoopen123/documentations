@@ -88,3 +88,125 @@ int result = t.Result; // blocks until Calculate() returns
 - Prefer `await` in modern async code instead of `Wait()` or `Result`, because blocking can cause deadlocks (especially in UI apps like WinForms/WPF).
 - Use `Wait()` or `Result` only in console apps or scenarios where blocking is acceptable.
 - Use `WaitAll()` when coordinating multiple tasks synchronously, but in `async` code prefer `await Task.WhenAll()`.
+
+## Task : ContinueWith, WhenAll, WhenAny
+
+### ContinueWith
+- Chains a continuation task that runs after the original task completes.
+
+```csharp
+Task t = Task.Run(() => DoWork())
+             .ContinueWith(prev => Console.WriteLine("Work finished!"));
+```
+#### Notes:
+- Continuation runs regardless of success/failure unless you specify conditions (`OnlyOnRanToCompletion`, `OnlyOnFaulted`, etc.).
+- Useful for sequential workflows where one task depends on another.
+
+### Task.WhenAll
+- Returns a task that completes when all supplied tasks finish.
+
+```csharp
+Task t1 = Task.Run(() => DoWork1());
+Task t2 = Task.Run(() => DoWork2());
+await Task.WhenAll(t1, t2); // async-friendly
+```
+#### Notes:
+- Non-blocking (when awaited).
+- If any task fails, the resulting task is faulted with an `AggregateException`.
+- Great for parallel execution when you need all results before proceeding.
+
+### Task.WhenAny
+- Returns a task that completes when any one of the supplied tasks finishes.
+
+```csharp
+Task t1 = Task.Run(() => DoWork1());
+Task t2 = Task.Run(() => DoWork2());
+Task finished = await Task.WhenAny(t1, t2);
+Console.WriteLine("First task done!");
+```
+#### Notes:
+- Lets you react to the first completed task.
+- Useful for timeouts, race conditions, or picking the fastest source.
+
+### Comparison Table
+|Feature  | `ContinueWith` | `WhenAll` | `WhenAny` | 
+| -------  |-----------  |-------  |-------  | 
+|Completion  |After one task finishes  |After all tasks finish  | After any one task finishes | 
+| Return Value | New continuation task |Task representing all tasks  | Task representing first finished | 
+| Error Handling |Can filter by status (success/fault)  | AggregateException if any fail | Exception only if chosen task fails | 
+| Use Case |Sequential chaining  |Parallel aggregation  | Race/first-response scenarios | 
+
+
+
+### Practical Guidance
+- Use ContinueWith for chaining dependent steps (but prefer await for readability).
+- Use WhenAll when you need all results (e.g., fetching data from multiple APIs).
+- Use WhenAny when you only care about the first response (e.g., fastest mirror server).
+
+- Demo Program
+
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        // --- ContinueWith Demo ---
+        Task t1 = Task.Run(() =>
+        {
+            Console.WriteLine("Task 1: Doing work...");
+            Task.Delay(1000).Wait();
+        })
+        .ContinueWith(prev =>
+        {
+            Console.WriteLine("Task 1 continuation: Work finished!");
+        });
+
+        // --- WhenAll Demo ---
+        Task t2 = Task.Run(() =>
+        {
+            Console.WriteLine("Task 2: Doing work...");
+            Task.Delay(1500).Wait();
+            return 42;
+        });
+
+        Task t3 = Task.Run(() =>
+        {
+            Console.WriteLine("Task 3: Doing work...");
+            Task.Delay(2000).Wait();
+            return 99;
+        });
+
+        Task.WhenAll(t2, t3).ContinueWith(prev =>
+        {
+            Console.WriteLine($"WhenAll: Results = {t2.Result}, {t3.Result}");
+        });
+
+        // --- WhenAny Demo ---
+        Task t4 = Task.Run(() =>
+        {
+            Task.Delay(1200).Wait();
+            Console.WriteLine("Task 4 finished first!");
+            return "Result from Task 4";
+        });
+
+        Task t5 = Task.Run(() =>
+        {
+            Task.Delay(2500).Wait();
+            Console.WriteLine("Task 5 finished later!");
+            return "Result from Task 5";
+        });
+
+        Task.WhenAny(t4, t5).ContinueWith(prev =>
+        {
+            Console.WriteLine($"WhenAny: First result = {prev.Result.Result}");
+        });
+
+        // Keep console alive until all tasks finish
+        Task.WaitAll(t1, t2, t3, t4, t5);
+        Console.WriteLine("All done!");
+    }
+}
+```
