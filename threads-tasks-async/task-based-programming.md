@@ -210,3 +210,38 @@ class Program
     }
 }
 ```
+
+## Exception Handling
+- Exceptions in Task are hidden: means the exception will not be propagated to the code which initiated that task, we can log the exception inside the task but can't be rethrown to the calling code.
+
+- Exceptions are stored inside the task: we can check the status of the task (once it is completed). The task will be in `Faulted` state when there is any exception in the task.
+Task also has exception in the `Exception` property. The `Exception` is of type `AggregateException` and can contains multiple exceptions. Hence we need to iterate on `exception.InnerExceptions` to get all exceptions.
+
+```csharp
+var tasks = new[]
+{
+    Task.Run(()=> {
+        throw new InvalidOperationException("Invalid Operation");
+    }),
+    Task.Run(()=> {
+        throw new ArgumentNullException("Argument null");
+    }),
+    Task.Run(()=> {
+        throw new Exception("General Exception");
+    })
+};
+
+Task.WhenAll(tasks).ContinueWith(t => 
+{
+  if(t.IsFaulted && t.Exception != null)
+  {
+    foreach(var ex in t.Exception.InnerExceptions)
+    {
+        Console.WriteLine(ex.Message);
+    }
+  }
+});
+
+Console.ReadLine();
+```
+
