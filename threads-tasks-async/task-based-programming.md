@@ -245,3 +245,98 @@ Task.WhenAll(tasks).ContinueWith(t =>
 Console.ReadLine();
 ```
 
+- `wait()` a task will make the task throw the exception to the calling code.
+
+```csharp
+var tasks = new[]
+{
+    Task.Run(()=> {
+        throw new InvalidOperationException("Invalid Operation");
+    }),
+    Task.Run(()=> {
+        throw new ArgumentNullException("Argument null");
+    }),
+    Task.Run(()=> {
+        throw new Exception("General Exception");
+    })
+};
+
+var task = Task.WhenAll(tasks);
+// wait the task 
+task.Wait();
+
+// OR using Result
+// task.Result
+Console.ReadLine();
+```
+
+## Task Synchronization
+- All synchronization primitives can also be used with `Task`.
+    - `lock`
+    - `Monitor`
+    - `mutex`
+    - `semaphore`
+    - `ManualResetEvent` 
+    - `AutoResetEvent`
+
+## Cancellation of Task
+
+### `CancellationTokenSource` and `CancellationToken`
+`CancellationTokenSource` is the controller that issues cancellation requests, while `CancellationToken` is the signal passed to tasks or `async` methods to check if cancellation has been requested. Together, they enable safe, cooperative cancellation of long-running or asynchronous operations.
+
+### CancellationTokenSource (CTS)
+    - The producer of cancellation signals.
+    - Call .Cancel() on it to notify all linked tasks.
+    - Can create multiple tokens and link them together.
+    - Must be disposed after use.
+### CancellationToken
+    - The consumer of cancellation signals.
+    - Passed into tasks, async methods, or APIs.
+    - Provides properties like `IsCancellationRequested` and methods like `ThrowIfCancellationRequested()`.
+
+- Example,
+
+```csharp
+var cts = new CancellationTokenSource();
+CancellationToken token = cts.Token;
+
+Task task = Task.Run(() =>
+{
+    for (int i = 0; i < 10; i++)
+    {
+        if (token.IsCancellationRequested)
+        {
+            Console.WriteLine("Cancellation requested!");
+            token.ThrowIfCancellationRequested();
+        }
+        Console.WriteLine($"Working {i}");
+        Thread.Sleep(500);
+    }
+}, token);
+
+// Trigger cancellation
+cts.Cancel();
+
+// Or if you need to cancel after a timeout
+// cts.CancelAfter(1000);
+
+try
+{
+    task.Wait();
+}
+catch (AggregateException ex)
+{
+    foreach (var inner in ex.InnerExceptions)
+    {
+        if (inner is TaskCanceledException)
+            Console.WriteLine("Task was canceled.");
+    }
+}
+```
+
+### Best Practices
+- Always dispose `CancellationTokenSource` when done.
+- Pass tokens down to all `async` methods instead of creating new sources.
+- Use linked tokens (`CancellationTokenSource.CreateLinkedTokenSource`) when multiple cancellation conditions exist.
+- Prefer `ThrowIfCancellationRequested()` if you want the task to transition into Canceled state automatically.
+
