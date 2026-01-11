@@ -104,6 +104,95 @@ class Program
 - Handle exceptions with `AggregateException`.
 - Use `ParallelOptions` to control degree of parallelism and cancellation.
 
+### Exception Handling
+When you run code with `Parallel.For`, `Parallel.ForEach`, or `Parallel.Invoke`, multiple tasks may throw exceptions concurrently. Instead of losing them or handling them one by one, the Parallel library wraps all exceptions into an `AggregateException` so you can process them together.
+
+#### How Exceptions Work in Parallel
+- Each parallel task runs independently.
+- If one or more tasks throw exceptions, they are collected.
+- At the end of execution, the Parallel method throws a single `AggregateException`.
+- You can inspect or flatten this exception to see all inner exceptions.
+
+#### Example: Handling Exceptions in Parallel.For
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            Parallel.For(0, 10, i =>
+            {
+                if (i == 5)
+                    throw new InvalidOperationException($"Error at iteration {i}");
+
+                Console.WriteLine($"Iteration {i}");
+            });
+        }
+        catch (AggregateException ex)
+        {
+            foreach (var inner in ex.InnerExceptions)
+            {
+                Console.WriteLine($"Caught exception: {inner.Message}");
+            }
+        }
+    }
+}
+```
+
+- Iteration 5 throws an exception.
+- The Parallel library collects it.
+- At the end, it throws an `AggregateException`.
+- You loop through InnerExceptions to see details.
+
+#### Example: Multiple Exceptions in Parallel.Invoke
+
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            Parallel.Invoke(
+                () => { throw new ArgumentNullException("Task A failed"); },
+                () => { throw new InvalidOperationException("Task B failed"); },
+                () => Console.WriteLine("Task C succeeded")
+            );
+        }
+        catch (AggregateException ex)
+        {
+            ex.Handle(inner =>
+            {
+                Console.WriteLine($"Handled: {inner.GetType()} - {inner.Message}");
+                return true; // mark as handled
+            });
+        }
+    }
+}
+```
+- Both Task A and Task B throw exceptions.
+- They are wrapped into a single `AggregateException`.
+- Handle lets you process each exception and decide if it’s handled.
+
+#### Best Practices
+- Always catch `AggregateException` when using Parallel methods.
+- Use `.Flatten()` if exceptions are nested.
+- Use `.Handle()` to filter or selectively process exceptions.
+- Remember: if you don’t handle them, the exception will propagate and crash your program.
+
+#### Quick Comparison
+| Scenario | Exception Type Raised | 
+|----------|-----------------------|
+| Single task throws | AggregateException with 1 inner exception| 
+| Multiple tasks throw | AggregateException with multiple inner exceptions| 
+| Nested parallel calls | Nested `AggregateException` (use `.Flatten()`) | 
 
 
 
