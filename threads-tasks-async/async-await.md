@@ -272,6 +272,104 @@ class Program
 - Use Stop when you want to cancel everything as soon as a condition is met.
 - Both are cooperative signals; threads already executing may finish their work.
 
+### What is ParallelLoopResult?
+- When you run a `Parallel.For` or `Parallel.ForEach`, the method returns a `ParallelLoopResult` object.
+- This object tells you how the loop ended:
+    - Did it run to completion?
+    - Did it stop early because of Break or Stop?
+    - If Break was used, at which iteration did it happen?
+
+#### Properties of ParallelLoopResult
+| Property | Type | Meaning |
+|----------|------|---------|
+| `IsCompleted` | `bool` | true if the loop ran all iterations without Break or Stop. | 
+| `LowestBreakIteration` | `long?` (nullable) | The smallest iteration index at which Break was called. null if no Break occurred. | 
+
+⚠️ Note: LowestBreakIteration is only relevant for Break, not Stop.
+
+#### Example: Using Break and Checking Result
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        ParallelLoopResult result = Parallel.For(0, 20, (i, state) =>
+        {
+            Console.WriteLine($"Iteration {i}");
+
+            if (i == 10)
+            {
+                Console.WriteLine("Break called at iteration " + i);
+                state.Break();
+            }
+        });
+
+        Console.WriteLine($"IsCompleted: {result.IsCompleted}");
+        Console.WriteLine($"LowestBreakIteration: {result.LowestBreakIteration}");
+    }
+}
+```
+
+#### Output (sample)
+
+```
+Iteration 0
+Iteration 1
+...
+Iteration 10
+Break called at iteration 10
+IsCompleted: False
+LowestBreakIteration: 10
+```
+
+
+#### Example: Using Stop
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        ParallelLoopResult result = Parallel.For(0, 20, (i, state) =>
+        {
+            Console.WriteLine($"Iteration {i}");
+
+            if (i == 10)
+            {
+                Console.WriteLine("Stop called at iteration " + i);
+                state.Stop();
+            }
+        });
+
+        Console.WriteLine($"IsCompleted: {result.IsCompleted}");
+        Console.WriteLine($"LowestBreakIteration: {result.LowestBreakIteration}");
+    }
+}
+```
+
+#### Output (sample)
+```
+Iteration 0
+Iteration 1
+...
+Iteration 10
+Stop called at iteration 10
+IsCompleted: False
+LowestBreakIteration:
+```
+
+👉 Notice: LowestBreakIteration is null because Stop was used.
+
+#### Key Takeaways
+- `ParallelLoopResult` is your status report after a parallel loop.
+- Use `IsCompleted` to check if all iterations ran.
+- Use `LowestBreakIteration` to know where the loop stopped when Break was used.
+- With Stop, `LowestBreakIteration` is always null.
 
 
 
