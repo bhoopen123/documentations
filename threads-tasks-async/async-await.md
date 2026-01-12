@@ -194,6 +194,83 @@ class Program
 | Multiple tasks throw | AggregateException with multiple inner exceptions| 
 | Nested parallel calls | Nested `AggregateException` (use `.Flatten()`) | 
 
+### Break and Stop
+`Parallel.For` executes iterations of a loop in parallel across multiple threads. Sometimes, you want to exit early from the loop. That’s where `Break` and `Stop` come in.
+
+#### Difference Between Break and Stop
+| Feature | Break() | Stop() | 
+|---------|---------|--------|
+|Purpose  | Signals that no iterations after the current index should start. | Signals that all iterations should stop, regardless of index. | 
+| Guarantee |Iterations before the current index may still run.  | No guarantee about order; all iterations may stop immediately. | 
+| Use Case | When loop is ordered and you want to stop at a certain point (like finding a minimum). | When you want to cancel everything as soon as a condition is met. | 
+| Performance | Allows already-started iterations < current index to finish |Cancels all iterations aggressively. | 
+
+
+
+#### Example: Using `Break`
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        Parallel.For(0, 20, (i, state) =>
+        {
+            Console.WriteLine($"Iteration {i}");
+
+            if (i == 10)
+            {
+                Console.WriteLine("Break called at iteration " + i);
+                state.Break();
+            }
+        });
+
+        Console.WriteLine("Loop completed.");
+    }
+}
+```
+
+#### Explanation
+- When i == 10, state.Break() is called.
+- Iterations greater than 10 will not start.
+- Iterations less than 10 may still continue if already running.
+
+#### Example: Using `Stop`
+```csharp
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        Parallel.For(0, 20, (i, state) =>
+        {
+            Console.WriteLine($"Iteration {i}");
+
+            if (i == 10)
+            {
+                Console.WriteLine("Stop called at iteration " + i);
+                state.Stop();
+            }
+        });
+
+        Console.WriteLine("Loop completed.");
+    }
+}
+```
+
+#### Explanation
+- When i == 10, state.Stop() is called.
+- All iterations stop immediately, regardless of index.
+- Even iterations less than 10 may be canceled if not yet started.
+
+#### Key Takeaways
+- Use Break when the loop is ordered and you want to stop at a certain index.
+- Use Stop when you want to cancel everything as soon as a condition is met.
+- Both are cooperative signals; threads already executing may finish their work.
 
 
 
