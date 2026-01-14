@@ -371,7 +371,65 @@ LowestBreakIteration:
 - Use `LowestBreakIteration` to know where the loop stopped when Break was used.
 - With Stop, `LowestBreakIteration` is always null.
 
+### Cancellation in Parallel Loop
 
+- It doesn’t have a built-in `CancellationToken` parameter. Instead, you use a `ParallelOptions` object, which allows you to pass a CancellationToken.
+- When cancellation is requested, the loop throws an `OperationCanceledException`.
+
+#### Example
+
+```csharp
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Program
+{
+    static void Main()
+    {
+        var cts = new CancellationTokenSource();
+        var options = new ParallelOptions
+        {
+            CancellationToken = cts.Token,
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+        };
+
+        try
+        {
+            Parallel.For(0, 1000, options, i =>
+            {
+                Console.WriteLine($"Processing {i}");
+
+                // Simulate work
+                Thread.Sleep(50);
+
+                // Cancel if condition met
+                if (i == 50)
+                {
+                    cts.Cancel(); // request cancellation
+                }
+
+                // Respect cancellation
+                options.CancellationToken.ThrowIfCancellationRequested();
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Loop was cancelled!");
+        }
+    }
+}
+```
+
+#### How It Works
+- `ParallelOptions` carries the `CancellationToken`.
+- Inside the loop body, you can call `ThrowIfCancellationRequested()` to stop gracefully.
+- Once cancellation is triggered, all running iterations will attempt to stop, and the loop throws `OperationCanceledException`.
+
+#### Important Notes
+- Not all iterations stop immediately: Some may still finish if they were already running.
+- Always wrap `Parallel.For` in a try/catch for `OperationCanceledException`.
+- You can combine cancellation with timeouts or user input for more control.
 
 
 
