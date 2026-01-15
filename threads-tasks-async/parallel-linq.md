@@ -59,3 +59,68 @@ numbers.AsParallel()
 - Use `ForAll()` when:
     - You need to apply side-effects (e.g., logging, writing output) quickly.
     - Order of results doesn’t matter.
+
+### Exception Handling in PLINQ
+- Since multiple partitions run in parallel, multiple exceptions can occur at once.
+    → PLINQ wraps them inside an `AggregateException`.
+
+#### Example: Exception Handling in PLINQ
+
+```csharp
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            var numbers = Enumerable.Range(1, 20);
+
+            var results = numbers.AsParallel()
+                                 .Select(n =>
+                                 {
+                                     if (n % 10 == 0)
+                                         throw new InvalidOperationException($"Bad number: {n}");
+                                     return n * 2;
+                                 })
+                                 .ToList();
+        }
+        catch (AggregateException ae)
+        {
+            foreach (var ex in ae.InnerExceptions)
+            {
+                Console.WriteLine($"Caught: {ex.GetType().Name} - {ex.Message}");
+            }
+        }
+    }
+}
+```
+#### What happens here:
+- Numbers divisible by 10 trigger an exception.
+- PLINQ collects all exceptions from different threads.
+- They’re wrapped in `AggregateException`.
+- You can iterate over `ae.InnerExceptions` to inspect each one.
+
+#### Key Points to Remember
+- Always catch `AggregateException`: That’s the standard wrapper for PLINQ errors.
+- `InnerExceptions`: Contains one or more exceptions thrown by parallel tasks.
+- `Flattening`: You can call `ae.Flatten()` to collapse nested AggregateExceptions.
+- **Side-effects caution:** Exceptions inside `ForAll()` or other side-effecting operators also bubble up as `AggregateException`.
+
+#### Best Practices
+- Use fine-grained exception handling inside the query if possible:
+
+```csharp
+.Select(n =>
+{
+    try { return DangerousOperation(n); }
+    catch { return -1; } // fallback
+})
+```
+
+- For critical errors, let them bubble up and handle them outside with `AggregateException`.
+- If ordering matters, remember that exception handling doesn’t change ordering guarantees (`AsOrdered()` still applies).
+
+
