@@ -124,3 +124,75 @@ class Program
 - If ordering matters, remember that exception handling doesn’t change ordering guarantees (`AsOrdered()` still applies).
 
 
+### Cancellation in PLINQ
+- PLINQ queries can be canceled mid-execution using a `CancellationToken`.
+- You pass the token into the query using `WithCancellation(token)`.
+- If cancellation is requested, PLINQ throws an `OperationCanceledException` wrapped inside an `AggregateException`.
+
+#### Example: Cancelling a PLINQ Query
+```csharp
+using System;
+using System.Linq;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        var cts = new CancellationTokenSource();
+        var token = cts.Token;
+
+        try
+        {
+            var numbers = Enumerable.Range(1, 1000000);
+
+            var query = numbers.AsParallel()
+                               .WithCancellation(token)
+                               .Select(n =>
+                               {
+                                   // Simulate work
+                                   if (n % 10000 == 0)
+                                       Thread.Sleep(10);
+
+                                   return n * 2;
+                               });
+
+            // Start query execution in background
+            var task = System.Threading.Tasks.Task.Run(() =>
+            {
+                foreach (var result in query)
+                {
+                    Console.WriteLine(result);
+                }
+            });
+
+            // Cancel after 100 ms
+            Thread.Sleep(100);
+            cts.Cancel();
+
+            task.Wait();
+        }
+        catch (AggregateException ae)
+        {
+            foreach (var ex in ae.InnerExceptions)
+            {
+                if (ex is OperationCanceledException)
+                    Console.WriteLine("Query was canceled.");
+                else
+                    Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+}
+```
+#### Key Points
+- `WithCancellation(token)`: Attaches a cancellation token to the query.
+- **Exception type**: Cancellation triggers `OperationCanceledException`, wrapped in `AggregateException`.
+- **Graceful stop**: All partitions stop processing when cancellation is signaled.
+- **Best practice**: Always wrap PLINQ queries in try/catch for AggregateException.
+
+#### Best Practices
+- Use cancellation for long-running queries where user interaction may stop execution.
+- Always check for cancellation when consuming results with `ForAll()` or `foreach`.
+- Combine with timeout logic using `CancellationTokenSource.CancelAfter(milliseconds)`.
+
