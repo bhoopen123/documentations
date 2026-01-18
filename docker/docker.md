@@ -115,9 +115,15 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
 - The whole point of building a Docker image is to share it in a place where other devices can assess it. This place is known as a container registery and could you think similar as a repository for Docker images, similar to how GitHub stores your code.
 - Any device that has access to the container registry and that is running the docker Engine can now download the docker image.
 
+- [Docker Hub](https://hub.docker.com/) is the biggest repository of publicly available Docker images in the internet.
+
 ### Docker Containers
 - A docker container is a running instance of a Docker Image. It has its isolated environment with its own file system, networking, and processes all based based on the instruction on the Image.
 - Inside a container, the application runs in isolation with its own resources and its own view of the operating system but sharing the same kernal as the Host.
 
 ![DockerContainer](/docker/imgs/DockerContainer.png)
 
+## Few docker commands
+- `docker version`
+- `docker pull <imageName>`
+- `docker images`: view docker images on console
