@@ -101,3 +101,23 @@ This term refers to the core components that make Docker work. So, it is compose
 
 In essence, Docker Desktop orchestrates all these components providing a seamless and efficient was to run Docker containers on your developer box.
 
+## Docker Desktop GUI
+- Starting Docker Desktop doesn't mean that the containers will start, the containers need to be started manually.
+
+
+## Docker Images vs Containers
+
+### Docker Images
+- Docker Image is a blueprint or template that contains everything needed to run your application. Also, each step, when performed to create a Docker image, is known as a layer, with each layer representing a specific instruction to create your containerized application.
+
+![Docker Image](/docker/imgs/DockerImage.png)
+
+- The whole point of building a Docker image is to share it in a place where other devices can assess it. This place is known as a container registery and could you think similar as a repository for Docker images, similar to how GitHub stores your code.
+- Any device that has access to the container registry and that is running the docker Engine can now download the docker image.
+
+### Docker Containers
+- A docker container is a running instance of a Docker Image. It has its isolated environment with its own file system, networking, and processes all based based on the instruction on the Image.
+- Inside a container, the application runs in isolation with its own resources and its own view of the operating system but sharing the same kernal as the Host.
+
+![DockerContainer](/docker/imgs/DockerContainer.png)
+
