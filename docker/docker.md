@@ -125,5 +125,32 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
 
 ## Few docker commands
 - `docker version`
-- `docker pull <imageName>`
+- `docker pull <imageName>`: download a docker image from DockerHub.
 - `docker images`: view docker images on console
+- `docker run <imageName>`: run a docker image in a container locally. If local image not found then download it first then run the image in a container.
+- `Ctrl+C` to stop the running image from command prompt.
+- `docker run -d --name <ContainerName> <ImageName>`
+    - `-d` : run as detatched (in background)
+    - `--name <ContainerName>` : Name of the Container you want to assign (else it will assign some random name).
+- `docker ps` : to show the runing containers.
+- `docker ps --all` : to show running and stopped containers.
+- `docker stop <ContainerName>`: stop the running container.
+
+## Docker Tags
+
+![Docker Tags](/docker/imgs/DockerTags.png)
+
+- To pull/download a specific `Tag` image from Docker Hub.
+```
+docker pull <imageName>:<tag version/name>
+```
+
+Example, 
+```
+docker pull nginx:1.26.3
+```
+
+**Note:** If we already have same docker image for different tag, docker pull will only download the different component and skip the components which are already present and not changed with resprect to the image components we are downloading.
+
+As we know that one image can have more than one Tags, if we download the same image with different tag, then docker will not download the image again, but it will show both the images downloaded locally when running command `docker images`.
+
