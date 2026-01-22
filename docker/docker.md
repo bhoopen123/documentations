@@ -31,10 +31,10 @@ Because application is deplyed on a single VM,
 - Simple rollback (as previous VM image can be spin-up)
 
 #### Issues
-- Significant RAM/Disk overhead
+- Significant RAM/Disk overhead since each VM has its own OS
 - VM Image creation takes time (in hours)
 - VM provisioning too slow (in minutes)
-- Boot time too slow (minutes)
+- Boot time too slow (minutes) since OS takes time to boot
 - Limited number of VMs can be created on a server
 - Wasted of resources (as each VM is having its own OS)
 - Multiple OS instances requires muitiple instances to patch
@@ -132,9 +132,13 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
 - `docker run -d --name <ContainerName> <ImageName>`
     - `-d` : run as detatched (in background)
     - `--name <ContainerName>` : Name of the Container you want to assign (else it will assign some random name).
+- `docker run -d --rm --name <ContainerName> <ImageName>`
+    - `--rm` : remove the container as soon as it is stopped.    
 - `docker ps` : to show the runing containers.
 - `docker ps --all` : to show running and stopped containers.
 - `docker stop <ContainerName>`: stop the running container.
+- `docker rm <ContainerName>`: remove a stopped container.
+- `docker rm <ContainerName> --force`: remove a running container.
 
 ## Docker Tags
 
