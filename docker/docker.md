@@ -158,3 +158,21 @@ docker pull nginx:1.26.3
 
 As we know that one image can have more than one Tags, if we download the same image with different tag, then docker will not download the image again, but it will show both the images downloaded locally when running command `docker images`.
 
+## Port Mapping
+The Docker containers are completely isolated by default. We will tell docker to map a port on our host machine, lets say port 8080 to port 80 inside the container. Port mapping is a bridge between host network and container.
+
+Now the brower can send the request to localhost:8080 which configured port mapping will be forwarded by docker to port 80 inside container.
+Nginx (inside container) processes the request successful and send response through our mapped ports ending in our browser.
+
+![Port Mapping](/docker/imgs/PortMapping.png)
+
+`
+docker run -d --rm -p <hostPort>:<containerPort> --name <containerName> <imageName>
+`
+
+Example,
+
+`
+docker run -d --rm -p 8080:80 --name nginx-test nginx
+`
+
