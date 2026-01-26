@@ -133,12 +133,17 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
     - `-d` : run as detatched (in background)
     - `--name <ContainerName>` : Name of the Container you want to assign (else it will assign some random name).
 - `docker run -d --rm --name <ContainerName> <ImageName>`
-    - `--rm` : remove the container as soon as it is stopped.    
+    - `--rm` : remove the container as soon as it is stopped.
+- `docker run -d --rm -p <hostPort>:<ContainerPort> --name <ContainerName> <ImageName>` 
+    - `-p <hostPort>:<ContainerPort>`: port mapping
+- `docker run -d -p <hostPort>:<ContainerPort> -v <VolumeName>:<ContainerPathToBeStoredInDockerVolume> --name <ContainerName> <ImageName>`
+    - `-v <VolumeName>:<ContainerPathToBeStoredInDockerVolume>` : docker volume 
 - `docker ps` : to show the runing containers.
 - `docker ps --all` : to show running and stopped containers.
 - `docker stop <ContainerName>`: stop the running container.
 - `docker rm <ContainerName>`: remove a stopped container.
 - `docker rm <ContainerName> --force`: remove a running container.
+- `docker volume list`: view docker volumes
 
 ## Docker Tags
 
@@ -176,3 +181,50 @@ Example,
 docker run -d --rm -p 8080:80 --name nginx-test nginx
 `
 
+## Opening up a bash session on a container
+`
+docker exec -it <containerName> /bin/bash
+`
+
+Example,
+
+`
+docker exec -it nginx-test /bin/bash
+`
+
+`-it` : means interactive session.
+
+- type `exit` to exit from docker console.
+
+## Docker volumes
+Lets say, there is a file system in a container. And our application has choosen to store all of the user generated files in the "path to data".
+There is something crucial to understand about Docker containers. They are designed to be ephemeral. When a container is removed or deleted, anything stored inside it disappears completely. So when we create a new container for the same application, all the data is gone.
+It starts only with the original file structure from its corresponding Docker image.
+How to prevent losing data when renewing a container?
+`Docker Volumne` can help in this.
+
+A great feature of Docker is the ability to reserve space for persistent storage. This is a dedicated space on the host machine that Docker manages. Within this persistance space, we can create a volume.
+Think of it as a special folder that Docker manages for us.
+
+When we start a docker container, and can tell Docker to add to data directory to this Volume. This creates a direct link whatever our application writes to that path actually gets stored in the Volume.
+Even if the comtainer gets deleted, our data remains safely stored in the volume.
+
+And the best part is, when we creata a new container we can connect it to the same volume. Now the new container has access to all the data which was stored by the previous container(s).
+
+![Docker Volume](/docker/imgs/DockerVolume.png)
+
+### Runinhg a docker with volume
+`-v` for volume: 
+<VolumeName>:<LocationOfTheContainerToLinkToOurVolume>
+
+Example,
+
+`
+docker run -d [--rm] -p 8080:80 -v nginx-data:/usr/share/nginx/html --name nginx-test nginx
+`
+
+- View docker volumes
+
+`
+docker volume list
+`
