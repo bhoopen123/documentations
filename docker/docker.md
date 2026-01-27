@@ -249,3 +249,35 @@ You place this file next to your application code and then execute the Docker bu
 `buildkit` creates a docker image by reading one by one each of the instructions on the docker file and generating layers or adding metadata to the image depending on the type of the instruction.
 At the end of the build process, the new docker image is ready to be used in local or can be published to a container registry in the cloud.
 
+**Example,** 
+
+Create a .NET application
+
+Open CMD -> publish the application
+
+`dotnet publish .\hello-docker.csproj -o published`
+
+- This will create application binaries in the `published` folder, Note: the projecti will be published in the `Release` mode. 
+- This command will also create an exe file which is specific to windows OS. So, we don't need to bundle the exe file during publish.
+
+`dotnet publish .\hello-docker.csproj -o published /p:UseAppHost=false`
+- This will create application binaries in the `published` folder without exe file. And it is common practice (excluding exe file) while creating a docker image.
+
+**Writing a Dockerfile**
+- Install Docker extension in VSCode.
+- Create a dockerfile with name `dockerfile` in the solution directory.
+- There are docker images for different .NET sdks/runtimes [Docker hub repositories](https://learn.microsoft.com/en-us/dotnet/core/docker/container-images#docker-hub-repositories). Select `aspnet` as we are building .NET web application docker image.
+- Now these aspnet code image is generally going to be based on Linux and not on windows. Because Linux images are much more smaller, more efficient, faster, and are broadly supported by most of the container orchestrator systems like Kubernetes. And since .NET is cross platform, you can easily use any image that is based on any Linux distribution.
+
+View [full tag listing](https://github.com/dotnet/dotnet-docker/blob/main/README.aspnet.md#full-tag-listing) to know which OS is used in which docker image.
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+WORKDIR /app
+
+COPY published/ ./
+
+ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
+```
+
