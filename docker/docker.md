@@ -228,3 +228,24 @@ docker run -d [--rm] -p 8080:80 -v nginx-data:/usr/share/nginx/html --name nginx
 `
 docker volume list
 `
+
+## Docker image creation options
+
+1. Dockerfile
+2. .NET SDK
+
+### Building container image using Dockerfiles
+As we know that a Docker image is a blueprint or template that contains everything needed to run the application. One way to define this template via a Dockerfile.
+This is a simple text where you specify all the instructions that are needed to prepare the Docker image.
+
+For example, 
+1. Select OS/.NET image
+2. Copy app files
+3. Install dependencies
+4. Configure environment
+5. Run app
+
+You place this file next to your application code and then execute the Docker build command. That command talks to a docker component called buildkit, which drives the build process.
+`buildkit` creates a docker image by reading one by one each of the instructions on the docker file and generating layers or adding metadata to the image depending on the type of the instruction.
+At the end of the build process, the new docker image is ready to be used in local or can be published to a container registry in the cloud.
+
