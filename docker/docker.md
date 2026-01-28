@@ -281,3 +281,28 @@ COPY published/ ./
 ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
 ```
 
+- In order to build Docker Image, run following commands
+- In VS code -> Ctrl + J (this will open terminal window)
+
+`
+docker build -t <DockerImageName> <locationOfBuildContext>
+`
+
+- locationOfBuildContext : are set of files that are going to be transfered into the docker deamon.
+
+Example, 
+
+`
+docker build -t hello-docker .
+`
+
+**Note:** here .(dot) specifies the current directory.
+This will create a docker image with the given image.
+
+- run docker image, 
+
+`
+docker run --rm -p 8080:8080 my-docker-image
+`
+
+
