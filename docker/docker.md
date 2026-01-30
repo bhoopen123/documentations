@@ -127,6 +127,7 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
 - `docker version`
 - `docker pull <imageName>`: download a docker image from DockerHub.
 - `docker images`: view docker images on console
+- `docker rmi <imageName>`: delete a docker image
 - `docker run <imageName>`: run a docker image in a container locally. If local image not found then download it first then run the image in a container.
 - `Ctrl+C` to stop the running image from command prompt.
 - `docker run -d --name <ContainerName> <ImageName>`
@@ -238,6 +239,8 @@ docker volume list
 As we know that a Docker image is a blueprint or template that contains everything needed to run the application. One way to define this template via a Dockerfile.
 This is a simple text where you specify all the instructions that are needed to prepare the Docker image.
 
+Dockerfile keywords are NOT case sensitive.
+
 For example, 
 1. Select OS/.NET image
 2. Copy app files
@@ -305,4 +308,25 @@ This will create a docker image with the given image.
 docker run --rm -p 8080:8080 my-docker-image
 `
 
+`
+docker run --rm -p <portOfHostMachine>:<portOfContainer> <dockerImageName>
+`
 
+## Multi Stage Builds
+If we need to create a new version of image with new version of the application, then we have to go through all of these steps starting from Publish and then runing the docker build command. But this can be done in more efficient way using "Multi-stage Build".
+
+Multi-stage build is really a docker build with multiple stages of work across that build process.
+
+```dockerfile
+#this image contains the .NET SDK, it can be used to compile the application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build 
+WORKDIR /src
+COPY . .
+RUN dotnet publish "hello-docker.csproj" -o /published /p:UseAppHost=false
+
+#this image contains the ASP.NET Core runtime, it cannot be used to compile the application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 
+WORKDIR /app
+COPY --from=build /published .
+ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
+```
