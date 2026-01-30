@@ -330,3 +330,29 @@ WORKDIR /app
 COPY --from=build /published .
 ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
 ```
+
+### Creating docker image with versions
+
+- Associate a tag with a image
+
+`
+docker tag <dockerImageName>:<tagName> <dockerImageName>:<tagName>
+`
+
+**Example,**
+
+`
+docker tag my-docker-image:latest my-docker-image:1.0
+`
+
+When runing docker build command, provide the tag as well with the image name.
+
+`
+docker build -t <DockerImageName>:<tagName/version> <locationOfBuildContext>
+`
+
+**Example,**
+
+`
+docker build -t my-docker-image:1.1 .
+`
