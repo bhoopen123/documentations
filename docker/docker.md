@@ -235,7 +235,7 @@ docker volume list
 1. Dockerfile
 2. .NET SDK
 
-### Building container image using Dockerfiles
+## Building container images with Dockerfiles
 As we know that a Docker image is a blueprint or template that contains everything needed to run the application. One way to define this template via a Dockerfile.
 This is a simple text where you specify all the instructions that are needed to prepare the Docker image.
 
@@ -312,7 +312,7 @@ docker run --rm -p 8080:8080 my-docker-image
 docker run --rm -p <portOfHostMachine>:<portOfContainer> <dockerImageName>
 `
 
-## Multi Stage Builds
+### Multi Stage Builds
 If we need to create a new version of image with new version of the application, then we have to go through all of these steps starting from Publish and then runing the docker build command. But this can be done in more efficient way using "Multi-stage Build".
 
 Multi-stage build is really a docker build with multiple stages of work across that build process.
@@ -377,4 +377,75 @@ WORKDIR /app
 COPY --from=build /published .
 ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
 ```
+
+## Building container images with .NET SDK
+
+Every .NET application is defined in project files, and this file contains several essential details like project type, target framwork, which files to include or produce as a final output.
+
+But it is also possible to specify multiple details about the base image that should be used to containerize the application, as well as info about the image to be produced and even execution details for the corrosponding container.
+
+The .NET publish command of the .NET SDK is able to gather all this information from the project file, plus command line arguments, to produce a Docker image for your application, always using the correct base image by default.
+It adds another layer that describes everything about the application including files, dependencies, configuration and how to run the app.
+
+So, when comparing this way of creating images with the traditional DockerFile based approach, you will get two key benefits, 
+
+**Benefits**
+
+1. No need of a DockerFile (since the recipe to build your image comes directly from your project file and command line arguments).
+2. No need Docker on your box, atleast not for just building the image, since the .NET SDK includes everything that's needed.
+
+**Challenges**
+- There are limited customization to define your images. Most of the things you can do in a DockerFile, you can do with .NET DSK, but not all Dockerfile instructions are supported including the run command.
+- The .NET SDK always generates a single layer for your application, regardless of what changes you made, making the caching experience poor in comparison with the rich caching offered by Dockerfiles.
+
+![Building docker images With .NET SDK](/docker/imgs/DockerImagesWithDotNetSdk.png)
+
+Building image with .NET SDK, 
+- Publish the application
+
+`
+dotnet publish --os linux --arch x64 /t:PublishContainer
+`
+    - `--os`: target OS
+    - `--arch`: target architecture (default is `x64`)
+    - `/t:PublishContainer`: A target is a concept of MSBuild engine, which is used to build .NET Application and instruct .NET publish tool that a container to be created.
+
+This command will generate artifacts specific to linux. and produce an image with imageName (as projectName) and image tag (default `latest`), with base image of targetframwork mentioned in project file.
+
+- Verify the image is created using `docker images` command.
+
+### Assign an image tag
+
+`
+dotnet publish --os linux --arch x64 /t:PublishContainer -p containerImageTag=<tagName/Id>
+`
+    - `-p containerImageTag=<tagName/Id>` : assign a tag to docker Image.
+
+### What about the layers when creating images using .NET SDK
+
+-  One additional layer is created with name `.NET SDK Container Tooling, Version 9.0.308...`
+
+### Provide base image when building docker image with .NET SDK
+
+This can be specific in following ways, 
+
+1. Put base image name in `.csproj` under `<ContainerBaseImage>` 
+
+Example, 
+
+`
+<ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:8.0-alpine</ContainerBaseImage>
+`
+
+2. With `dotnet publish` command,
+
+`
+dotnet publish --os linux-musl --arch x64 /t:PublishContainer -p ContainerImageTag=1.4
+`
+
+    - `--os linux-musl`: will use Alpine based image instead of base image.
+
+More details are [here](https://learn.microsoft.com/en-us/dotnet/core/containers/publish-configuration).
+
+
 
