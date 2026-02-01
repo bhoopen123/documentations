@@ -479,11 +479,37 @@ docker logout
 
 ### Publish image using .NET CLI on DockerHub
 
-- In `.csproject` file, add 
+- In `.csproject` file, add `ContainerRepository`
+
 `<ContainerRepository>bhoopen123/hello-docker</ContainerRepository>`
 
-- VS Code, terminal
+- VS Code -> terminal
 
 ```
+docker login
+
 dotnet publish --os linux-musl --arch x64 -p ContainerRegistry=docker.io /t:PublishContainer -p ContainerImageTag=1.5
 ```
+
+## Running a Container in the Cloud
+
+- These images can be run on other computer, or VM, or Cloud service, etc.
+- To quick check these images, lets use [docker playground](https://www.docker.com/play-with-docker/) -> Lab Environment -> "Get Started".
+- "https://labs.play-with-docker.com/" -> Login -> Start
+
+This will start a virtual sandbox/session will be closed after sometime.
+
+- Click "Add new instance", this will start a new playground session.
+
+`
+docker run --rm -p 8080:8080 bhoopen123/hello-docker:1.5
+`
+
+you should see the messages on console that the application is running,
+
+- Click "Open Port" -> type port (i.e.) -> Ok
+- the application is running.
+
+## Containers in the DevOps lifecycle
+
+![Containers in DevOps Lifecycle](/docker/imgs/ContainersInDevOpsLifecycle.png)
