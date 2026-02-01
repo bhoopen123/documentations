@@ -448,4 +448,42 @@ dotnet publish --os linux-musl --arch x64 /t:PublishContainer -p ContainerImageT
 More details are [here](https://learn.microsoft.com/en-us/dotnet/core/containers/publish-configuration).
 
 
+## Publishing Images
 
+"Container Registry" is a place to store docker images, for example, DockerHub. 
+You can publish your image in Container Registry, so it can be made available to download into any other Dev Box, or Orchestrator like Kubernetes, which could run on prem or in the cloud.
+
+### Publish image using Docker CLI on DockerHub
+
+- Login into DockerHub.com
+- Goto `MyHub` -> `Repositories`. 
+    - An image has to go under a Repository in DockerHub, so you can create a Repository in DockerHub portal or using Docker CLI. 
+- VS Code -> terminal 
+
+```
+docker login
+// select or identify the image you need to publish in DockerHub
+// will push the image along with repository Name
+
+docker tag hello-docker:1.4 bhoopen123/hello-docker:1.4
+// docker tag <imageName>:<tagName> <yourDockerHubUserName>/<dockerHubImageName>:<dockerHubImageTagName>
+
+docker push bhoopen123/hello-docker:1.4
+// docker push <yourDockerHubUserName>/<dockerHubImageName>:<dockerHubImageTagName>
+
+// this will push all the layers of docker image in your DockerHub repository
+
+docker logout
+```
+- Verify the image should be pushed in your DockerHub repository
+
+### Publish image using .NET CLI on DockerHub
+
+- In `.csproject` file, add 
+`<ContainerRepository>bhoopen123/hello-docker</ContainerRepository>`
+
+- VS Code, terminal
+
+```
+dotnet publish --os linux-musl --arch x64 -p ContainerRegistry=docker.io /t:PublishContainer -p ContainerImageTag=1.5
+```
