@@ -356,3 +356,25 @@ docker build -t <DockerImageName>:<tagName/version> <locationOfBuildContext>
 `
 docker build -t my-docker-image:1.1 .
 `
+
+### Creating smaller images
+There are ways to create docker images significantly smaller by picking the right base OS. Refer [Images Optimized for size](https://learn.microsoft.com/en-us/dotnet/core/docker/container-images#images-optimized-for-size) and one of the OS is Alpine, 
+
+Lets create a docker Image using Alpine OS
+
+Get Alpine image tag for .NET 8.0 from [full tag listing](https://github.com/dotnet/dotnet-docker/blob/main/README.aspnet.md#full-tag-listing).
+
+```dockerfile
+#this image contains the .NET SDK, it can be used to compile the application
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build 
+WORKDIR /src
+COPY . .
+RUN dotnet publish "hello-docker.csproj" -o /published /p:UseAppHost=false
+
+#this image contains the ASP.NET Core runtime, it cannot be used to compile the application
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine 
+WORKDIR /app
+COPY --from=build /published .
+ENTRYPOINT [ "dotnet", "hello-docker.dll" ]
+```
+
