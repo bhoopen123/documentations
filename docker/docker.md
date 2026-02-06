@@ -1,4 +1,7 @@
 ## Introduction
+
+Credit: https://www.youtube.com/watch?v=cWMztQwIQNs
+
 Before Virtualization, what all things a developer/ops team needs to check during deployment
 
 ### Possible reasons why the new deployment is failed, 
@@ -513,3 +516,12 @@ you should see the messages on console that the application is running,
 ## Containers in the DevOps lifecycle
 
 ![Containers in DevOps Lifecycle](/docker/imgs/ContainersInDevOpsLifecycle.png)
+
+
+## Docker Compose 
+A tool for defining and running multi-container Docker applications. We will now be able to define all our infrastructure services in a single file called `docker-compose.yml`.
+
+This will include the definition of a container to use, environment variables, ports, and even dependencies between them. Then we will execute a single docker-compose up command and all the containers will start in the right order with correct configuration. 
+Also compose provide a default network that all containers are joined to, incase they need to talk to each other. 
+
+So, docker compose are able to document the way to configure all our infrastructure services in a single file and get start all of them with just one line command. 
