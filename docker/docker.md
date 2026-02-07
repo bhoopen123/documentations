@@ -524,4 +524,17 @@ A tool for defining and running multi-container Docker applications. We will now
 This will include the definition of a container to use, environment variables, ports, and even dependencies between them. Then we will execute a single docker-compose up command and all the containers will start in the right order with correct configuration. 
 Also compose provide a default network that all containers are joined to, incase they need to talk to each other. 
 
-So, docker compose are able to document the way to configure all our infrastructure services in a single file and get start all of them with just one line command. 
+So, docker compose are able to document the way to configure all our infrastructure services in a single file and get start all of them with just one line command.
+
+Docker compose is installed with docker desktop.
+
+- `docker compose --version` - check if docker compose is installed.
+- `docker image rm <imageName>` - remove image(s), but the image should not be running as container.
+- `docker image rm <imageName1> <imageName2>` - remove image(s)
+- `docker image ls` - get list of all images
+- `docker image ls -q`- get only the imageIds of all images
+
+Now combine this command with image remove, 
+- `docker image rm $(docker image ls -q)` 
+### clean-up existing containers and images
+
