@@ -13,3 +13,13 @@
 - [Microservice basics](/microservices/microservices.md) 
 
 - [Intercept and change Microsoft.DataAnnotation validation message in .NET 8.0 Web Api](/asp.net-web-api/change-validation-message-in-.NET8.0-web-api.md)
+
+- [C# Threads](/threads-tasks-async/threads.md)
+
+- [C# Tasks](/threads-tasks-async/task-based-programming.md)
+
+- [c# async await](/threads-tasks-async/async-await.md)
+
+- [C# Parallel-Linq](/threads-tasks-async/parallel-linq.md)
+
+- [Docker](/docker/docker.md)
