@@ -536,5 +536,115 @@ Docker compose is installed with docker desktop.
 
 Now combine this command with image remove, 
 - `docker image rm $(docker image ls -q)` 
-### clean-up existing containers and images
+
+### Install Docker Compose
+Docker Compose is a tool built on docker engine which makes easy to start applictions with multiple containers [docker-compose install](https://docs.docker.com/compose/install).
+
+Docker Compose is shipped with Docker Desktop, so if you have docker desktop then Docker Compose tool is already installed.
+
+```
+docker-compose --version
+
+docker image ls     // get the list of all images
+docker image ls -q  // get only image Ids
+
+docker image rm $(docker image ls -q) // this will remove all the images, note: might throw error if any of the container is running which is using any of the image.
+
+docker container rm -f $(docker container ls -a -q)   // remove all the containers
+
+docker network ls
+
+docker network create <network-name>
+
+// Start MongoDB
+docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=supersecret --network mongo-network --name mongodb mongo
+
+// start mongo express
+docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=supersecret -e ME_CONFIG_MONGODB_SERVER=mongodb --network mongo-network --name mongo-express mongo-express
+
+docker logs <containerId>
+
+```
+
+### Why docker compose
+- You use a single YAML file to configure and maintain your application's services
+- with a single command, you create and start all the services from your configuration
+
+compose.yaml
+    - Helps to structure your commands
+    - Simplified container management
+    - its a code that defines how your services should run
+    - can be versioned for easier collaboration
+
+```
+version: `3.1`  // version of docker-compose, must be compatible with Compose installed
+
+services:       // list all the services/containers, you want to run
+  mongodb:      // container name
+    image: mongo:<tag>
+    
+    ports:
+     - 27017:27017
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    
+  mongo-express:
+    image: mongo-express
+
+    ports:
+     - 8081:8081
+
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongodb
+
+  another-service:
+
+```
+
+### Networks in Docker Compose 
+- By default, Compode sets up a single network for your app
+- Communication via container name
+
+```
+docker-compose -f <docker-compose-yaml file name> up
+
+docker-compose -f <docker-compose-yaml file name> up -d   // start containers in detatch mode
+
+docker-compose -f <docker-compose-yaml file name> down  // stop all containers and removes containers, networks, volumes and images created by "up"
+
+docker-compose -f <docker-compose-yaml file name> stop  // only stops the containers
+
+docker-compose -f <docker-compose-yaml file name> start // starts the stopped containers
+
+```
+- It builds, creates and starts the defined containers
+- Also picks up any changes by stopping and recreating the container, if changes are made after the creation
+
+When one service/container depends on another, 
+- you can control the order of service startup and shutdown with the "depends_on" option
+
+```
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongodb
+    depends_on:
+      - "mongodb"
+```
+
+- **Note:** **Compose** file is part of application code.
+
+### Secrets in Docker Compose
+- `Secrets` is even better way to use secrets without having to use environments variables
+
+  - Define the secret using the **top-level secrets** element
+  - In the service definition, **reference the secret** with the _secret attribute_
 
