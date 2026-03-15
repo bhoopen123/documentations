@@ -648,3 +648,16 @@ When one service/container depends on another,
   - Define the secret using the **top-level secrets** element
   - In the service definition, **reference the secret** with the _secret attribute_
 
+### Docker Compose Summary
+- Docker compose is a central place to define and manage services (containers) that make up your app, so that they can be run together in an isolated environment
+- easy to run and clean up your entire app 
+
+### Limitations
+- Well-suited for local development and small-scale deployments
+- Designed to run containers on a single host system
+- Engineers still need to operate the containers manually, so a lot of operatinal efforts to run containers on a large scale.
+
+To solve this, Kubernetes came into the picture, which 
+- Can manage **large-scale** apps and containers deployed **across multiple nodes**
+- Auto-Scaling 
+- **Self healing:** which is about starting, restarting of containers if they crash and has machanisms to manage operations of large number of containsers in an automated way. 
