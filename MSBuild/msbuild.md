@@ -81,8 +81,35 @@ In .NET, the `global.json` file is used to control which .NET SDK version is use
 - **Supports multiple SDKs:** Useful when maintaining legacy projects alongside newer ones.
 
 
+## `packages.lock.json`
 
+`packages.lock.json` in C# projects is a NuGet lock file that ensures repeatable and deterministic packages restores by recording the exact dependency graph (including transitive dependencies and versions) used during a build.
 
+### Purpose of `packages.lock.json`
+- **Repeatable Builds:** Guarantees that all developers and CI/CD agents restore the same package versions.
+- **Dependency Graph Locking:** Captures not only direct dependencies but also transitive ones.
+- **Change Tracking:** Any modification in package references updates the lock file, making dependency changes visible in source control.
 
+### How It Works
+- Enable Lock File
+Add this property in your `.csproj` or `Directory.Build.props`:
 
+```
+<PropertyGroup>
+  <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+</PropertyGroup>
+```
+
+1. This tells NuGet to generate and maintain `packages.lock.json`.
+2. File Location
+  - Created at the project root (same folder as `.csproj`).
+  - Each project gets its own `packages.lock.json`.
+3. Update Behavior
+  - If you add or update a package, NuGet updates the lock file.
+  - If no changes are made, restores use the existing lock file for consistency.
+
+### Key Benefits-
+- **Deterministic Restores:** Builds won’t break due to newer transitive versions being pulled.
+- **Source Control Visibility:** Dependency changes are tracked in PRs.
+- **CI/CD Reliability:** Ensures pipelines use the same dependency graph as local dev machines.
 
