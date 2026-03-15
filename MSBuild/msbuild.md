@@ -113,3 +113,36 @@ Add this property in your `.csproj` or `Directory.Build.props`:
 - **Source Control Visibility:** Dependency changes are tracked in PRs.
 - **CI/CD Reliability:** Ensures pipelines use the same dependency graph as local dev machines.
 
+### Command to Update `packages.lock.json`
+The lock file is automatically updated whenever you restore packages and there are changes in dependencies. 
+The key commands are:
+
+1. Restore with lock file enabled
+```
+dotnet restore --use-lock-file
+```
+
+- Ensures packages.lock.json is created or updated.
+- If the file doesn’t exist, it will be generated.
+- If dependencies changed, it will be updated.
+
+
+2. Explicitly force an update
+```
+dotnet restore --force-evaluate
+```
+
+- Forces NuGet to recalculate the dependency graph and update `packages.lock.json` even if nothing seems changed.
+- Useful when you suspect transitive dependencies have shifted.
+
+3. Update after editing `.csproj`
+Whenever you add/remove/update a package in .csproj, just run:
+```dotnet restore```
+
+If <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile> is set, the lock file will be updated automatically.
+
+⚖️ Quick Comparison
+- dotnet restore → Normal restore, updates lock file if needed.
+- dotnet restore --use-lock-file → Ensures lock file is respected/created.
+- dotnet restore --force-evaluate → Forces full recalculation and update.
+
