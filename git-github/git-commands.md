@@ -68,3 +68,47 @@ This keeps main history linear like rebasing, while creating a single merge comm
 
 With Squash Commit:
 ![Git Squash Commit](/git-github/images/squash-commit.png)
+
+
+## Git `switch` vs `checkout`
+
+`git checkout` is the older, multi-purpose command that can switch branches and restore files, while `git switch` (introduced in Git 2.23) is a newer, simpler command dedicated only to branch switching.
+
+```
+git checkout branch-name
+
+git switch branch-name
+```
+
+Create new branch
+
+```
+git checkout -b new-branch
+
+git switch -c new-branch
+```
+
+File restore,
+
+Can restore files: `git checkout HEAD file.txt`
+restore not supported with `switch` use `restore` instead.
+
+### Git `restore`
+only for file restoration.
+
+git restore is a relatively new Git command (introduced in Git 2.23) that is used to restore working directory files to a previous state.
+
+**Example:-** 
+
+Suppose you edited app.js but don’t want to keep those changes:
+
+`git restore app.js`
+
+Discard changes in all files
+
+`git restore .`
+
+Restore from a specific commit
+
+`git restore --source=<commitSHA> config.json`
+
