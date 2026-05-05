@@ -10,11 +10,15 @@ Before Virtualization, what all things a developer/ops team needs to check durin
 - All application files (resources, etc.) and application settings
 - Enough RAM / CPU
 - All steps are performed in given order during deployment
-- There could be dll depemdency conflicts amoung the application we have deployed and other apps already present on the server
+- There could be dll dependency conflicts amoung the application we have deployed and other apps already present on the server
 - Required permission are missing
 
-Such deployment is called as Bare Metal Deployment, 
-following image shows how Bare Metal Deployment is and issues related to it, 
+Such deployment is called as **Bare Metal Deployment**, 
+```
+Bare Metal Deployment refers to deploying an application or operating system directly onto physical hardware, without a hypervisor (VMs) or a container runtime abstracting the machine.
+```
+
+following image shows what Bare Metal Deployment is and issues related to it, 
 
 ![Bare Metal Deployment](/docker/imgs/BareMetalDeployment.png)
 
@@ -24,7 +28,7 @@ following image shows how Bare Metal Deployment is and issues related to it,
 
 #### Benefits
 Because application is deplyed on a single VM,
-- OR/Runtime match
+- OS/Runtime match
 - Clean isolated environment for each deployed application
 - Better resource allocation
 - Built-in permissions
@@ -94,13 +98,13 @@ To control and command. The Docker Daemon exposes RESTFul API, which acts as the
 
 ### Docker CLI
 One way to interact with Docker API is through the Docker Command Line Interface (CLI).
-When you type commands line docker run or docker build in your terminal, you are using the CLI, which then translates these commands into API calls that the Docker daemon will recieve and understand.
+When you type commands like `docker run` or `docker build` in your terminal, you are using the CLI, which then translates these commands into API calls that the Docker daemon will recieve and understand.
 
 ### Docker GUI
-This is a user friendly graphical user interface provided by Docker Desktop to interact with the Docker Engine components. Its communicates the Docker API similar was as Docker CLI, sending commands and giving visual feedback.
+This is a user friendly graphical user interface provided by Docker Desktop to interact with the Docker Engine components. It communicates with Docker API similar as Docker CLI sending commands and giving visual feedback.
 
 ### Docker Engine
-This term refers to the core components that make Docker work. So, it is composed of the Docker daemon, the Docker API and Docker CLI. 
+This term refers to the core components that make Docker work. So, it is composed of the `Docker daemon`, the `Docker API` and `Docker CLI`. 
 
 In essence, Docker Desktop orchestrates all these components providing a seamless and efficient was to run Docker containers on your developer box.
 
@@ -115,7 +119,7 @@ In essence, Docker Desktop orchestrates all these components providing a seamles
 
 ![Docker Image](/docker/imgs/DockerImage.png)
 
-- The whole point of building a Docker image is to share it in a place where other devices can assess it. This place is known as a container registery and could you think similar as a repository for Docker images, similar to how GitHub stores your code.
+- The whole point of building a Docker image is to share it in a place where other devices can assess it. This place is known as a container registery and you could think it similar as a repository for Docker images, similar to how GitHub stores your code.
 - Any device that has access to the container registry and that is running the docker Engine can now download the docker image.
 
 - [Docker Hub](https://hub.docker.com/) is the biggest repository of publicly available Docker images in the internet.
